@@ -1,8 +1,17 @@
 # Köchel
 
-A self-hosted classical music library manager and streaming server, modeled around composer → work → movement → recording rather than artist/album/track.
+A self-hosted classical music library manager and streaming server, modeled around **composer → work → movement → recording** rather than artist/album/track — because that's how classical music actually works. Compare recordings of the same work side by side, browse by composer and catalogue number, and stream from your own library on your own hardware.
 
-**Phase 1** built the data model, core backend API, and Docker packaging. **Phase 2** added the import pipeline: uploading albums from the browser, scanning the library, extracting embedded tags as a first pass, matching against [Open Opus](https://openopus.org) for composer/work suggestions, and a manual-correction UI for committing recordings into the database. **Phase 3** is the real web player — composer browsing, work detail, compare-recordings, search, and a full Now Playing view with movement-level navigation — built to the [design spec](design_handoff_now_playing/README.md). **Phase 4** is the native iOS companion app (SwiftUI, not a WebView) — the same browsing/search/Now Playing screens, background audio with lock-screen and Control Center integration, and offline downloads. Import later moved from a standalone rough HTML tool into a proper page of the same web app (`/import`), matching the design system, alongside a Settings page (persisted accent color and Now Playing panel theme) and playback state that survives a page refresh.
+Named after Ludwig von Köchel, who catalogued Mozart's works.
+
+## Features
+
+- **A data model built for classical music** — composers, works, movements, catalogue numbers (K., Op., BWV…), ensembles, performers, and recordings, not a repurposed pop-music schema.
+- **Compare recordings** of the same work side by side instead of picking one "album."
+- **Web player** — composer browsing, work detail, search, and a full Now Playing view with movement-level navigation and a slowly-turning record motif.
+- **Native iOS app** (SwiftUI, not a WebView) — the same browsing/search/Now Playing experience, background audio with lock-screen and Control Center integration, and offline downloads.
+- **Browser-based import** — drag a folder in, and it scans embedded tags, suggests composer/work matches against your library and [Open Opus](https://openopus.org), and lets you correct anything before committing it into your catalogue.
+- **Self-hosted** — your library, your server, no subscriptions or external dependencies at runtime.
 
 ## Quick start
 
@@ -26,7 +35,20 @@ Open **http://localhost:3000/import** (linked from the header of the main app):
 
 If you'd rather place files directly on the server yourself (e.g. it's the same machine, or you're copying over the network some other way), that still works exactly as before — just drop them under `MUSIC_LIBRARY_PATH` and hit Scan.
 
-MusicBrainz enrichment is intentionally out of scope for Phase 2.
+MusicBrainz enrichment is intentionally out of scope for now.
+
+## Deploying to a server
+
+`docker-compose.yml`'s three services (`postgres`, `app`, `web`) all run `restart: unless-stopped`, so a plain `docker compose up -d --build` on any Docker host is a full deployment — no separate deploy tooling. On the server:
+
+```
+git clone https://github.com/XWBarton/kochel.git
+cd kochel
+cp .env.example .env   # set POSTGRES_PASSWORD, MUSIC_LIBRARY_PATH, and WEB_PORT/APP_PORT if the defaults collide with anything else already running
+docker compose up -d --build
+```
+
+To ship a new version later: `git pull && docker compose up -d --build`.
 
 ## Backend development (without Docker)
 
@@ -40,7 +62,7 @@ cp ../.env.example .env   # then point DATABASE_URL at a local Postgres
 
 ### Running tests
 
-The test suite **drops and recreates the entire schema before every test**. `conftest.py` refuses to run unless `DATABASE_URL` points at a database whose name ends in `_test` — this is a hard guard, not a convention, after an early Phase 2 test run was accidentally pointed at the dev database and wiped the seeded demo library.
+The test suite **drops and recreates the entire schema before every test**. `conftest.py` refuses to run unless `DATABASE_URL` points at a database whose name ends in `_test` — this is a hard guard, not a convention, after an early test run was accidentally pointed at the dev database and wiped the seeded demo library.
 
 One-time setup — create the test database (the app container's entrypoint runs migrations before anything else, including before `conftest.py`'s own auto-create logic gets a chance to run, so it must exist first when going through Docker):
 ```
@@ -73,7 +95,7 @@ Requires Xcode and [XcodeGen](https://github.com/yonaskolb/XcodeGen) (`brew inst
 ```
 cd ios
 xcodegen generate
-open Kochel.xcodeproj
+open Köchel.xcodeproj
 ```
 
 Build and run on a Simulator (⌘R). The app defaults to `http://localhost:8000`, which resolves to your Mac's Docker stack automatically when running in Simulator — no configuration needed. For a physical device, point it at your Mac's LAN IP (Settings screen inside the app; stored via `AppSettings`/UserDefaults).
@@ -93,7 +115,7 @@ Build and run on a Simulator (⌘R). The app defaults to `http://localhost:8000`
 - `web/src/playback/` — the audio-backed playback engine shared across the whole web app (`PlaybackContext`); session (work/recording/movement/elapsed) is persisted to `localStorage` and restored paused on reload
 - `web/src/settings/SettingsContext.tsx` — accent color and Now Playing panel theme, persisted to `localStorage`
 - `web/src/styles/tokens.css` — the web design system (fonts, ink/paper/accent colors, hairline/label utilities)
-- `ios/Kochel/Views/` — the Phase 4 iOS screens (Library Home, Work Detail, Compare Recordings, Search, Downloads, Now Playing)
+- `ios/Kochel/Views/` — the iOS screens (Library Home, Work Detail, Compare Recordings, Search, Downloads, Now Playing)
 - `ios/Kochel/Playback/PlaybackController.swift` — the AVPlayer-backed playback engine with lock-screen/Control Center integration
 - `ios/Kochel/Downloads/DownloadManager.swift` — offline downloads (URLSession + local file storage)
 - `ios/Kochel/DesignSystem/` — the iOS design system (bundled Abril Fatface/EB Garamond fonts, colors, the Sunburst motif)
