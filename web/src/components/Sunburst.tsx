@@ -60,7 +60,15 @@ export function Sunburst({ size, fg, accent, rays = true, spinning = false, prog
         <circle cx="100" cy="100" r={NEEDLE_INNER_R} stroke={fg} strokeOpacity="0.35" fill="none" />
         <circle cx="100" cy="100" r="5" fill={accent} />
       </g>
-      {progress !== undefined && <circle cx={needleX} cy={needleY} r="4" fill={accent} />}
+      {progress !== undefined && (
+        // fixed geometry at the origin, moved via transform rather than
+        // animating cx/cy directly — updating cx/cy every frame forces the
+        // renderer to re-rasterize the circle's own geometry each time,
+        // which visibly distorts it (squashed flat/thin depending on
+        // direction) at this size; a transform just repositions an
+        // unchanged, pre-rasterized shape
+        <circle cx="0" cy="0" r="4" fill={accent} transform={`translate(${needleX} ${needleY})`} />
+      )}
     </svg>
   )
 }
