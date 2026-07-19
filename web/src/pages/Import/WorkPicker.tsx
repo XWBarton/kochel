@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { getWork } from '../../api/client'
 import { searchOpenOpusWorks, searchWorks } from '../../api/importClient'
 import type { WorkSearchResult } from '../../api/importTypes'
@@ -20,6 +20,14 @@ export function WorkPicker({ composer, value, onChange, initialQuery, fileCount 
   const [focused, setFocused] = useState(false)
   const [results, setResults] = useState<WorkSearchResult[]>([])
   const debouncedQuery = useDebouncedValue(query, 250)
+  const valueRef = useRef(value)
+  valueRef.current = value
+
+  async function searchForComposer(q: string | undefined): Promise<WorkSearchResult[]> {
+    if (composer.id != null) return searchWorks(composer.id, q)
+    if (composer.openopusId) return searchOpenOpusWorks(composer.openopusId, q)
+    return []
+  }
 
   useEffect(() => {
     if (value) {
@@ -27,19 +35,13 @@ export function WorkPicker({ composer, value, onChange, initialQuery, fileCount 
       return
     }
     let cancelled = false
-    async function run() {
-      let r: WorkSearchResult[] = []
-      if (composer.id != null) {
-        r = await searchWorks(composer.id, debouncedQuery.trim() || undefined)
-      } else if (composer.openopusId) {
-        r = await searchOpenOpusWorks(composer.openopusId, debouncedQuery.trim() || undefined)
-      }
+    searchForComposer(debouncedQuery.trim() || undefined).then((r) => {
       if (!cancelled) setResults(r)
-    }
-    run()
+    })
     return () => {
       cancelled = true
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [composer, debouncedQuery, value])
 
   async function pickExisting(id: number) {
@@ -59,6 +61,29 @@ export function WorkPicker({ composer, value, onChange, initialQuery, fileCount 
         .map((m) => ({ movementNumber: m.movement_number, name: m.name, existingId: m.id })),
     })
   }
+
+  // Auto-resolve from the tag-derived album-title guess as soon as a
+  // composer is settled, instead of leaving an unselected search box.
+  useEffect(() => {
+    const guess = initialQuery.trim()
+    if (valueRef.current || !guess) return
+    let cancelled = false
+    searchForComposer(guess).then((r) => {
+      if (cancelled || valueRef.current) return
+      const exact = r.find((x) => x.title.trim().toLowerCase() === guess.toLowerCase())
+      if (exact && exact.source === 'library' && exact.id != null) {
+        pickExisting(exact.id)
+      } else if (exact) {
+        onChange({ ...newManualWork(exact.title, fileCount), category: exact.category ?? '' })
+      } else {
+        onChange(newManualWork(guess, fileCount))
+      }
+    })
+    return () => {
+      cancelled = true
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialQuery, composer])
 
   if (value) {
     return (

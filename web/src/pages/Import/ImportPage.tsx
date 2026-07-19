@@ -9,14 +9,22 @@ import { UploadPanel } from './UploadPanel'
 export function ImportPage() {
   const [groups, setGroups] = useState<ScanGroupOut[]>([])
   const [scanning, setScanning] = useState(false)
+  const [scanMessage, setScanMessage] = useState<string | null>(null)
   const [selected, setSelected] = useState<ScanGroupOut | null>(null)
 
   async function runScan() {
     setScanning(true)
+    setScanMessage(null)
     try {
       const result = await scanLibrary()
       setGroups(result.groups)
       setSelected((prev) => (prev ? result.groups.find((g) => g.relative_dir === prev.relative_dir) ?? null : null))
+      setScanMessage(
+        result.groups.length === 0
+          ? 'Scan complete — nothing pending'
+          : `Scan complete — ${result.groups.length} pending`,
+      )
+      setTimeout(() => setScanMessage(null), 3000)
     } finally {
       setScanning(false)
     }
@@ -41,7 +49,14 @@ export function ImportPage() {
       </div>
 
       <UploadPanel onUploaded={runScan} />
-      <GroupList groups={groups} selectedDir={selected?.relative_dir ?? null} onSelect={setSelected} onRescan={runScan} scanning={scanning} />
+      <GroupList
+        groups={groups}
+        selectedDir={selected?.relative_dir ?? null}
+        onSelect={setSelected}
+        onRescan={runScan}
+        scanning={scanning}
+        scanMessage={scanMessage}
+      />
 
       {selected && <ReviewPanel group={selected} onCommitted={handleCommitted} onCancel={() => setSelected(null)} />}
     </div>

@@ -7,12 +7,20 @@
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  padding: 14px 0;
+  gap: 12px;
+  padding: 14px 10px;
+  margin: 0 -10px;
   border-bottom: 1px solid var(--divider);
+  border-radius: 4px;
   cursor: pointer;
-  width: 100%;
+  width: calc(100% + 20px);
   text-align: left;
   background: none;
+  transition: background-color 120ms ease;
+}
+
+.row:hover {
+  background-color: color-mix(in srgb, var(--accent) 8%, transparent);
 }
 
 .row.active {
@@ -25,10 +33,29 @@
 }
 
 .meta {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
   font-size: 12px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   opacity: 0.5;
+  white-space: nowrap;
+}
+
+.reviewHint {
+  opacity: 0.8;
+}
+
+.chevron {
+  opacity: 0.4;
+  font-size: 14px;
+}
+
+.scanMessage {
+  font-size: 12px;
+  letter-spacing: 0.06em;
+  opacity: 0.6;
   white-space: nowrap;
 }
 
