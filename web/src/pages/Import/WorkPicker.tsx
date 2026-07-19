@@ -1,9 +1,9 @@
 import { useEffect, useRef, useState } from 'react'
 import { getWork } from '../../api/client'
 import { searchOpenOpusWorks, searchWorks } from '../../api/importClient'
-import type { WorkSearchResult } from '../../api/importTypes'
+import type { ScanFileOut, WorkSearchResult } from '../../api/importTypes'
 import { useDebouncedValue } from './useDebouncedValue'
-import { newManualWork } from './reviewTypes'
+import { guessMovementNames, newManualWork } from './reviewTypes'
 import type { ReviewComposer, ReviewWork } from './reviewTypes'
 import shared from './ImportShared.module.css'
 
@@ -12,10 +12,10 @@ interface WorkPickerProps {
   value: ReviewWork | null
   onChange: (work: ReviewWork | null) => void
   initialQuery: string
-  fileCount: number
+  files: ScanFileOut[]
 }
 
-export function WorkPicker({ composer, value, onChange, initialQuery, fileCount }: WorkPickerProps) {
+export function WorkPicker({ composer, value, onChange, initialQuery, files }: WorkPickerProps) {
   const [query, setQuery] = useState(initialQuery)
   const [focused, setFocused] = useState(false)
   const [results, setResults] = useState<WorkSearchResult[]>([])
@@ -74,9 +74,9 @@ export function WorkPicker({ composer, value, onChange, initialQuery, fileCount 
       if (exact && exact.source === 'library' && exact.id != null) {
         pickExisting(exact.id)
       } else if (exact) {
-        onChange({ ...newManualWork(exact.title, fileCount), category: exact.category ?? '' })
+        onChange({ ...newManualWork(exact.title, guessMovementNames(files)), category: exact.category ?? '' })
       } else {
-        onChange(newManualWork(guess, fileCount))
+        onChange(newManualWork(guess, guessMovementNames(files)))
       }
     })
     return () => {
@@ -189,7 +189,7 @@ export function WorkPicker({ composer, value, onChange, initialQuery, fileCount 
                   if (r.source === 'library' && r.id != null) {
                     pickExisting(r.id)
                   } else {
-                    const work = newManualWork(r.title, fileCount)
+                    const work = newManualWork(r.title, guessMovementNames(files))
                     onChange({ ...work, category: r.category ?? '' })
                   }
                 }}
@@ -205,7 +205,7 @@ export function WorkPicker({ composer, value, onChange, initialQuery, fileCount 
         )}
       </div>
       <div style={{ marginTop: 8 }}>
-        <button className={shared.buttonSmall} onClick={() => onChange(newManualWork(query, fileCount))}>
+        <button className={shared.buttonSmall} onClick={() => onChange(newManualWork(query, guessMovementNames(files)))}>
           Enter work manually
         </button>
       </div>

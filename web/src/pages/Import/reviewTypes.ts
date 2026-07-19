@@ -77,7 +77,8 @@ export function newManualComposer(name: string): ReviewComposer {
   return { id: null, openopusId: null, name, sortName: '', birthYear: null, deathYear: null, period: null }
 }
 
-export function newManualWork(title: string, movementCount: number): ReviewWork {
+export function newManualWork(title: string, movementNames: (string | null)[]): ReviewWork {
+  const names = movementNames.length > 0 ? movementNames : [null]
   return {
     id: null,
     title,
@@ -87,9 +88,9 @@ export function newManualWork(title: string, movementCount: number): ReviewWork 
     category: '',
     composedYear: null,
     catalogueNumbers: [],
-    movements: Array.from({ length: Math.max(movementCount, 1) }, (_, i) => ({
+    movements: names.map((name, i) => ({
       movementNumber: i + 1,
-      name: null,
+      name,
     })),
   }
 }
@@ -115,6 +116,21 @@ export function guessComposerName(files: ScanFileOut[]): string {
     }
   }
   return best
+}
+
+/** Movements are guessed one-per-file, in track order, using each file's
+ * embedded title tag — e.g. "I. Adagio", "II. Largo". Falls back to
+ * filename order when there's no track-number tag to sort by. */
+export function guessMovementNames(files: ScanFileOut[]): (string | null)[] {
+  const ordered = [...files].sort((a, b) => {
+    const ta = parseLeadingInt(a.tags.tracknumber)
+    const tb = parseLeadingInt(b.tags.tracknumber)
+    if (ta != null && tb != null) return ta - tb
+    if (ta != null) return -1
+    if (tb != null) return 1
+    return a.filename.localeCompare(b.filename)
+  })
+  return ordered.map((f) => f.tags.title?.trim() || null)
 }
 
 export function guessWorkTitle(files: ScanFileOut[]): string {

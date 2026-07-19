@@ -131,7 +131,7 @@ export function ReviewPanel({ group, onCommitted, onCancel }: ReviewPanelProps) 
           value={work}
           onChange={setWork}
           initialQuery={guessWorkTitle(group.files)}
-          fileCount={group.files.length}
+          files={group.files}
         />
       ) : (
         <div style={{ fontStyle: 'italic', opacity: 0.55, fontSize: 14 }}>Pick a composer first.</div>
