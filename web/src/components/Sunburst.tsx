@@ -5,7 +5,9 @@ const RAY_ANGLES = Array.from({ length: 24 }, (_, i) => i * 15)
 // underneath it, so the needle itself is drawn outside the spinning group.
 const NEEDLE_ANGLE_DEG = -18
 const NEEDLE_OUTER_R = 88
-const NEEDLE_INNER_R = 8
+// clear of the center accent dot (r=5): needle dot (r=4) resting here has
+// its near edge at 22-4=18, well outside the center dot's edge at 5
+const NEEDLE_INNER_R = 22
 
 interface SunburstProps {
   size: number
@@ -30,7 +32,12 @@ export function Sunburst({ size, fg, accent, rays = true, spinning = false, prog
       <g
         style={{
           transformOrigin: '100px 100px',
-          animation: spinning ? 'kochel-spin 10s linear infinite' : undefined,
+          // always-on animation, toggling play-state rather than adding/
+          // removing it — removing it snaps rotation back to 0deg instead
+          // of freezing wherever the disc currently is, which reads as a
+          // jarring stop rather than a clean one
+          animation: 'kochel-spin 10s linear infinite',
+          animationPlayState: spinning ? 'running' : 'paused',
         }}
       >
         <circle cx="100" cy="100" r="95" stroke={fg} strokeOpacity="0.5" fill="none" />
