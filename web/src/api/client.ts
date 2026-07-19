@@ -18,6 +18,24 @@ async function get<T>(path: string): Promise<T> {
   return resp.json() as Promise<T>
 }
 
+async function put<T>(path: string, payload: unknown): Promise<T> {
+  const resp = await fetch(`${API_ROOT}${path}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  })
+  if (!resp.ok) {
+    let detail = resp.statusText
+    try {
+      detail = (await resp.json()).detail || detail
+    } catch {
+      // non-JSON error body
+    }
+    throw new Error(detail)
+  }
+  return resp.json() as Promise<T>
+}
+
 export function getComposers(): Promise<ComposerListResponse> {
   return get('/composers')
 }
@@ -63,22 +81,36 @@ export interface RecordingUpdatePayload {
   }[]
 }
 
-export async function updateRecording(recordingId: number, payload: RecordingUpdatePayload): Promise<RecordingListItem> {
-  const resp = await fetch(`${API_ROOT}/recordings/${recordingId}`, {
-    method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(payload),
-  })
-  if (!resp.ok) {
-    let detail = resp.statusText
-    try {
-      detail = (await resp.json()).detail || detail
-    } catch {
-      // non-JSON error body
-    }
-    throw new Error(detail)
-  }
-  return resp.json() as Promise<RecordingListItem>
+export function updateRecording(recordingId: number, payload: RecordingUpdatePayload): Promise<RecordingListItem> {
+  return put(`/recordings/${recordingId}`, payload)
+}
+
+export interface WorkUpdatePayload {
+  title: string
+  subtitle: string | null
+  key: string | null
+  form: string | null
+  category: string | null
+  composed_year: number | null
+  composed_year_uncertain: boolean
+  composed_year_range_end: number | null
+  catalogue_numbers: { system: string; number: string; is_primary: boolean }[]
+}
+
+export function updateWork(workId: number, payload: WorkUpdatePayload): Promise<WorkDetail> {
+  return put(`/works/${workId}`, payload)
+}
+
+export interface ComposerUpdatePayload {
+  name: string
+  sort_name: string | null
+  birth_year: number | null
+  death_year: number | null
+  period: string | null
+}
+
+export function updateComposer(composerId: number, payload: ComposerUpdatePayload): Promise<ComposerListItem> {
+  return put(`/composers/${composerId}`, payload)
 }
 
 export function search(query: string): Promise<SearchResponse> {

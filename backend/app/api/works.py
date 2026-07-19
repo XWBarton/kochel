@@ -8,9 +8,10 @@ from app.api.import_ import _get_or_create_ensemble, _get_or_create_person
 from app.models import Composer, Ensemble, Person, Recording, Work
 from app.models.recording import RecordingPerformer
 from app.models.track import Track
+from app.models.work import WorkCatalogueNumber
 from app.schemas.import_ import ImportRecordingIn
 from app.schemas.recording import RecordingListItem, RecordingListResponse
-from app.schemas.work import MovementOut, WorkDetail, WorkListItem, WorkListResponse
+from app.schemas.work import MovementOut, WorkDetail, WorkListItem, WorkListResponse, WorkUpdate
 
 router = APIRouter(tags=["works"])
 
@@ -60,6 +61,18 @@ def _to_work_list_item(work: Work) -> WorkListItem:
     )
 
 
+def _to_work_detail(work: Work) -> WorkDetail:
+    base = _to_work_list_item(work)
+    return WorkDetail.model_validate(
+        {
+            **base.model_dump(),
+            "composer_id": work.composer_id,
+            "composer_name": work.composer.name,
+            "movements": [MovementOut.model_validate(m) for m in work.movements],
+        }
+    )
+
+
 @router.get("/composers/{composer_id}/works", response_model=WorkListResponse)
 async def list_works_for_composer(composer_id: int, session: SessionDep) -> WorkListResponse:
     composer = await session.get(Composer, composer_id)
@@ -90,15 +103,49 @@ async def get_work(work_id: int, session: SessionDep) -> WorkDetail:
     if work is None:
         raise HTTPException(status_code=404, detail="Work not found")
 
-    base = _to_work_list_item(work)
-    return WorkDetail.model_validate(
-        {
-            **base.model_dump(),
-            "composer_id": work.composer_id,
-            "composer_name": work.composer.name,
-            "movements": [MovementOut.model_validate(m) for m in work.movements],
-        }
-    )
+    return _to_work_detail(work)
+
+
+@router.put("/works/{work_id}", response_model=WorkDetail)
+async def update_work(work_id: int, payload: WorkUpdate, session: SessionDep) -> WorkDetail:
+    """Edits a work's own fields and replaces its catalogue numbers
+    wholesale. Movements and track mapping aren't touched here — those are
+    fixed at import time, not something you'd casually re-map."""
+    work = await session.get(Work, work_id)
+    if work is None:
+        raise HTTPException(status_code=404, detail="Work not found")
+    if not payload.title.strip():
+        raise HTTPException(status_code=400, detail="Title is required")
+
+    work.title = payload.title
+    work.subtitle = payload.subtitle
+    work.key = payload.key
+    work.form = payload.form
+    work.category = payload.category
+    work.composed_year = payload.composed_year
+    work.composed_year_uncertain = payload.composed_year_uncertain
+    work.composed_year_range_end = payload.composed_year_range_end
+
+    existing_cns = (
+        await session.execute(select(WorkCatalogueNumber).where(WorkCatalogueNumber.work_id == work_id))
+    ).scalars().all()
+    for cn in existing_cns:
+        await session.delete(cn)
+    await session.flush()
+
+    for cn_in in payload.catalogue_numbers:
+        session.add(
+            WorkCatalogueNumber(
+                work_id=work_id, system=cn_in.system, number=cn_in.number, is_primary=cn_in.is_primary
+            )
+        )
+
+    await session.commit()
+
+    stmt = select(Work).where(Work.id == work_id).options(*_work_options(), selectinload(Work.composer))
+    result = await session.execute(stmt)
+    fresh = result.scalar_one()
+    return _to_work_detail(fresh)
 
 
 @router.delete("/works/{work_id}", status_code=status.HTTP_204_NO_CONTENT)

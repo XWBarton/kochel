@@ -19,6 +19,33 @@
   line-height: 1;
 }
 
+.nameRow {
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+}
+
+.editLink {
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.4;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-family: inherit;
+}
+
+.editLink:hover {
+  opacity: 0.9;
+}
+
+.editPanel {
+  padding: 20px 0 32px;
+  border-bottom: 1px solid var(--divider);
+  margin-bottom: 20px;
+}
+
 .meta {
   font-family: var(--font-body);
   font-style: italic;

@@ -1,4 +1,4 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 
 class CatalogueNumberOut(BaseModel):
@@ -7,6 +7,24 @@ class CatalogueNumberOut(BaseModel):
     system: str
     number: str
     is_primary: bool
+
+
+class CatalogueNumberIn(BaseModel):
+    system: str
+    number: str
+    is_primary: bool = False
+
+
+class WorkUpdate(BaseModel):
+    title: str
+    subtitle: str | None = None
+    key: str | None = None
+    form: str | None = None
+    category: str | None = None
+    composed_year: int | None = None
+    composed_year_uncertain: bool = False
+    composed_year_range_end: int | None = None
+    catalogue_numbers: list[CatalogueNumberIn] = Field(default_factory=list)
 
 
 class WorkListItem(BaseModel):

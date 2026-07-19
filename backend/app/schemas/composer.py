@@ -16,3 +16,11 @@ class ComposerListItem(BaseModel):
 class ComposerListResponse(BaseModel):
     items: list[ComposerListItem]
     total: int
+
+
+class ComposerUpdate(BaseModel):
+    name: str
+    sort_name: str | None = None
+    birth_year: int | None = None
+    death_year: int | None = None
+    period: str | None = None

@@ -19,6 +19,13 @@
   display: inline-block;
 }
 
+.titleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+
 .deleteLink {
   font-size: 12px;
   letter-spacing: 0.1em;

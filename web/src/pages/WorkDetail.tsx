@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { deleteWork, getWork, getWorkRecordings, updateRecording } from '../api/client'
+import { deleteWork, getWork, getWorkRecordings, updateRecording, updateWork } from '../api/client'
 import type { RecordingListItem, WorkDetail as WorkDetailType } from '../api/types'
 import { formatDuration, toRoman } from '../lib/format'
 import { RecordingForm } from './Import/RecordingForm'
-import type { ReviewRecording } from './Import/reviewTypes'
+import type { ReviewRecording, ReviewWork } from './Import/reviewTypes'
+import { WorkDetailsDisclosure, WorkTitleField } from './Import/WorkFieldsForm'
 import { findMovementTiming } from '../playback/movementTiming'
 import { usePlayback } from '../playback/PlaybackContext'
 import styles from './WorkDetail.module.css'
@@ -36,6 +37,24 @@ function recordingToReviewRecording(r: RecordingListItem): ReviewRecording {
   }
 }
 
+function workToReviewWork(w: WorkDetailType): ReviewWork {
+  return {
+    id: w.id,
+    title: w.title,
+    subtitle: w.subtitle ?? '',
+    key: w.key ?? '',
+    form: w.form ?? '',
+    category: w.category ?? '',
+    composedYear: w.composed_year,
+    catalogueNumbers: w.catalogue_numbers.map((cn) => ({
+      system: cn.system,
+      number: cn.number,
+      isPrimary: cn.is_primary,
+    })),
+    movements: w.movements.map((m) => ({ movementNumber: m.movement_number, name: m.name, existingId: m.id })),
+  }
+}
+
 export function WorkDetail() {
   const { workId } = useParams()
   const id = Number(workId)
@@ -48,6 +67,10 @@ export function WorkDetail() {
   const [editValue, setEditValue] = useState<ReviewRecording | null>(null)
   const [savingEdit, setSavingEdit] = useState(false)
   const [editError, setEditError] = useState<string | null>(null)
+  const [editingWork, setEditingWork] = useState(false)
+  const [workEditValue, setWorkEditValue] = useState<ReviewWork | null>(null)
+  const [savingWorkEdit, setSavingWorkEdit] = useState(false)
+  const [workEditError, setWorkEditError] = useState<string | null>(null)
   const { playRecording } = usePlayback()
 
   useEffect(() => {
@@ -102,6 +125,42 @@ export function WorkDetail() {
     setExpandedMovementId((prev) => (prev === movementId ? null : movementId))
   }
 
+  function startEditingWork() {
+    setWorkEditValue(workToReviewWork(work!))
+    setEditingWork(true)
+    setWorkEditError(null)
+  }
+
+  async function handleSaveWorkEdit() {
+    if (!workEditValue) return
+    setSavingWorkEdit(true)
+    setWorkEditError(null)
+    try {
+      const updated = await updateWork(workEditValue.id!, {
+        title: workEditValue.title,
+        subtitle: workEditValue.subtitle || null,
+        key: workEditValue.key || null,
+        form: workEditValue.form || null,
+        category: workEditValue.category || null,
+        composed_year: workEditValue.composedYear,
+        composed_year_uncertain: work!.composed_year_uncertain,
+        composed_year_range_end: work!.composed_year_range_end,
+        catalogue_numbers: workEditValue.catalogueNumbers.map((cn) => ({
+          system: cn.system,
+          number: cn.number,
+          is_primary: cn.isPrimary,
+        })),
+      })
+      setWork(updated)
+      setEditingWork(false)
+      setWorkEditValue(null)
+    } catch (e) {
+      setWorkEditError(e instanceof Error ? e.message : 'Save failed')
+    } finally {
+      setSavingWorkEdit(false)
+    }
+  }
+
   function startEditing(recording: RecordingListItem) {
     setEditingRecordingId(recording.id)
     setEditValue(recordingToReviewRecording(recording))
@@ -151,8 +210,29 @@ export function WorkDetail() {
           {deleting ? 'Deleting…' : 'Delete work'}
         </button>
       </div>
-      <div className={styles.title}>{work.title}</div>
-      <div className={styles.meta}>{metaParts.join(' · ')}</div>
+      <div className={styles.titleRow}>
+        <div className={styles.title}>{work.title}</div>
+        <button
+          className={styles.editRecordingLink}
+          onClick={() => (editingWork ? setEditingWork(false) : startEditingWork())}
+        >
+          {editingWork ? 'Close' : 'Edit'}
+        </button>
+      </div>
+      {editingWork && workEditValue ? (
+        <div className={styles.recordingEditPanel} style={{ padding: '4px 0 24px 0' }}>
+          <WorkTitleField value={workEditValue} onChange={setWorkEditValue} />
+          <WorkDetailsDisclosure value={workEditValue} onChange={setWorkEditValue} />
+          <div className={shared.buttonRow} style={{ marginTop: 12 }}>
+            <button className={shared.buttonPrimary} onClick={handleSaveWorkEdit} disabled={savingWorkEdit}>
+              {savingWorkEdit ? 'Saving…' : 'Save changes'}
+            </button>
+            {workEditError && <span className={shared.statusError}>{workEditError}</span>}
+          </div>
+        </div>
+      ) : (
+        <div className={styles.meta}>{metaParts.join(' · ')}</div>
+      )}
 
       <div className={styles.sectionHeader}>
         <div className={styles.sectionLabel}>
