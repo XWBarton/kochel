@@ -157,35 +157,39 @@ async def update_recording(recording_id: int, payload: ImportRecordingIn, sessio
     recording.notes = payload.notes
     recording.is_default_in_library = payload.is_default_in_library
 
-    existing_performers = (
-        await session.execute(select(RecordingPerformer).where(RecordingPerformer.recording_id == recording_id))
-    ).scalars().all()
-    for performer in existing_performers:
-        await session.delete(performer)
-    await session.flush()
-
-    for p_in in payload.performers:
-        if p_in.person_id is not None:
-            person = await session.get(Person, p_in.person_id)
-            if person is None:
-                raise HTTPException(status_code=404, detail=f"Person {p_in.person_id} not found")
-        else:
-            if not p_in.name:
-                raise HTTPException(
-                    status_code=400, detail="Performer name is required when not referencing an existing person"
-                )
-            person = await _get_or_create_person(session, p_in.name, p_in.sort_name)
-        session.add(
-            RecordingPerformer(
-                recording_id=recording_id,
-                person_id=person.id,
-                role=p_in.role,
-                instrument=p_in.instrument,
-                credited_order=p_in.credited_order,
-            )
-        )
-
     try:
+        # the is_default_in_library change above can violate the
+        # one-default-per-work constraint on autoflush, which the ORM may
+        # trigger on any of the queries below (not just the final commit) —
+        # so the whole block from here through commit needs to be covered
+        existing_performers = (
+            await session.execute(select(RecordingPerformer).where(RecordingPerformer.recording_id == recording_id))
+        ).scalars().all()
+        for performer in existing_performers:
+            await session.delete(performer)
+        await session.flush()
+
+        for p_in in payload.performers:
+            if p_in.person_id is not None:
+                person = await session.get(Person, p_in.person_id)
+                if person is None:
+                    raise HTTPException(status_code=404, detail=f"Person {p_in.person_id} not found")
+            else:
+                if not p_in.name:
+                    raise HTTPException(
+                        status_code=400, detail="Performer name is required when not referencing an existing person"
+                    )
+                person = await _get_or_create_person(session, p_in.name, p_in.sort_name)
+            session.add(
+                RecordingPerformer(
+                    recording_id=recording_id,
+                    person_id=person.id,
+                    role=p_in.role,
+                    instrument=p_in.instrument,
+                    credited_order=p_in.credited_order,
+                )
+            )
+
         await session.commit()
     except IntegrityError:
         await session.rollback()
