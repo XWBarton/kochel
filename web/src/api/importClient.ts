@@ -5,6 +5,7 @@ import type {
   ImportCommitResponse,
   PersonSearchResult,
   ScanResponse,
+  UploadedFileResult,
   UploadResponse,
   WorkSearchResult,
 } from './importTypes'
@@ -76,7 +77,30 @@ export function relativePathFor(file: File): string {
   return (file as File & { webkitRelativePath?: string }).webkitRelativePath || file.name
 }
 
-export function uploadFiles(files: File[], onProgress: (fraction: number) => void): Promise<UploadResponse> {
+// Reverse proxies in front of the server (e.g. Cloudflare's free-tier edge)
+// commonly cap a single request body around 100MB, well below what a whole
+// folder of lossless FLACs adds up to. Splitting into batches under that
+// keeps every individual request safely within any such limit.
+const MAX_BATCH_BYTES = 60 * 1024 * 1024
+
+function batchFiles(files: File[]): File[][] {
+  const batches: File[][] = []
+  let current: File[] = []
+  let currentBytes = 0
+  for (const file of files) {
+    if (current.length > 0 && currentBytes + file.size > MAX_BATCH_BYTES) {
+      batches.push(current)
+      current = []
+      currentBytes = 0
+    }
+    current.push(file)
+    currentBytes += file.size
+  }
+  if (current.length > 0) batches.push(current)
+  return batches
+}
+
+function uploadBatch(files: File[], onBytesLoaded: (loaded: number) => void): Promise<UploadResponse> {
   return new Promise((resolve, reject) => {
     const formData = new FormData()
     for (const file of files) {
@@ -86,7 +110,7 @@ export function uploadFiles(files: File[], onProgress: (fraction: number) => voi
     const xhr = new XMLHttpRequest()
     xhr.open('POST', `${IMPORT_ROOT}/upload`)
     xhr.upload.addEventListener('progress', (e) => {
-      if (e.lengthComputable) onProgress(e.loaded / e.total)
+      if (e.lengthComputable) onBytesLoaded(e.loaded)
     })
     xhr.addEventListener('load', () => {
       if (xhr.status >= 200 && xhr.status < 300) {
@@ -98,4 +122,28 @@ export function uploadFiles(files: File[], onProgress: (fraction: number) => voi
     xhr.addEventListener('error', () => reject(new Error('Upload failed: network error')))
     xhr.send(formData)
   })
+}
+
+export async function uploadFiles(files: File[], onProgress: (fraction: number) => void): Promise<UploadResponse> {
+  const totalBytes = files.reduce((sum, f) => sum + f.size, 0) || 1
+  const batches = batchFiles(files)
+  const allResults: UploadedFileResult[] = []
+  let bytesDoneBeforeCurrentBatch = 0
+
+  for (const batch of batches) {
+    const batchBytes = batch.reduce((sum, f) => sum + f.size, 0)
+    const batchResult = await uploadBatch(batch, (loaded) => {
+      onProgress((bytesDoneBeforeCurrentBatch + loaded) / totalBytes)
+    })
+    allResults.push(...batchResult.results)
+    bytesDoneBeforeCurrentBatch += batchBytes
+    onProgress(bytesDoneBeforeCurrentBatch / totalBytes)
+  }
+
+  return {
+    results: allResults,
+    saved_count: allResults.filter((r) => r.status === 'saved').length,
+    skipped_count: allResults.filter((r) => r.status === 'skipped').length,
+    rejected_count: allResults.filter((r) => r.status === 'rejected').length,
+  }
 }
