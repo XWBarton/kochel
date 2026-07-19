@@ -17,6 +17,13 @@ interface PlaybackContextValue {
   jumpToMovement: (movementId: number) => void
   nextMovement: () => void
   prevMovement: () => void
+  /** Live read of the true audio position, independent of the ~4/sec
+   * `elapsedSeconds` state — for driving frame-accurate smooth animation
+   * (progress bars, the needle) rather than chasing discrete state updates. */
+  getElapsedSeconds: () => number
+  /** Stops playback entirely and clears the session (unlike pause, which
+   * keeps position for resume) — dismisses the mini-player/Now Playing. */
+  stopPlayback: () => void
 }
 
 const PlaybackContext = createContext<PlaybackContextValue | null>(null)
@@ -263,6 +270,35 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
     setElapsedSeconds(clamped)
   }, [])
 
+  const getElapsedSeconds = useCallback(() => {
+    const audio = audioRef.current
+    if (!audio) return 0
+    return Math.max(0, audio.currentTime - movementStartRef.current)
+  }, [])
+
+  const stopPlayback = useCallback(() => {
+    const audio = audioRef.current!
+    audio.pause()
+    audio.removeAttribute('src')
+    audio.load()
+    currentTrackIdRef.current = null
+    currentMovementIdRef.current = null
+    movementStartRef.current = 0
+    movementDurationRef.current = 0
+    stateRef.current = { work: null, recording: null }
+    setWork(null)
+    setRecording(null)
+    setCurrentMovementId(null)
+    setIsPlaying(false)
+    setElapsedSeconds(0)
+    setDurationSeconds(0)
+    try {
+      localStorage.removeItem(SESSION_KEY)
+    } catch {
+      // storage unavailable — nothing to clean up then
+    }
+  }, [])
+
   const value = useMemo<PlaybackContextValue>(
     () => ({
       work,
@@ -277,6 +313,8 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
       jumpToMovement,
       nextMovement,
       prevMovement,
+      getElapsedSeconds,
+      stopPlayback,
     }),
     [
       work,
@@ -291,6 +329,8 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
       jumpToMovement,
       nextMovement,
       prevMovement,
+      getElapsedSeconds,
+      stopPlayback,
     ],
   )
 

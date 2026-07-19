@@ -1,10 +1,11 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import type { PointerEvent as ReactPointerEvent } from 'react'
 import { Sunburst } from '../components/Sunburst'
 import { hexToRgba } from '../lib/color'
 import { formatDuration, toRoman } from '../lib/format'
 import { findMovementTiming } from '../playback/movementTiming'
 import { usePlayback } from '../playback/PlaybackContext'
+import { useSmoothProgress } from '../playback/useSmoothProgress'
 import { useSettings } from '../settings/SettingsContext'
 import styles from './NowPlaying.module.css'
 
@@ -12,21 +13,32 @@ const INK = '#161513'
 const PAPER = '#fafaf7'
 
 export function NowPlaying() {
-  const { work, recording, currentMovementId, isPlaying, elapsedSeconds, durationSeconds, togglePlayPause, seekTo, jumpToMovement, nextMovement, prevMovement } =
-    usePlayback()
+  const {
+    work,
+    recording,
+    currentMovementId,
+    isPlaying,
+    elapsedSeconds,
+    durationSeconds,
+    togglePlayPause,
+    seekTo,
+    jumpToMovement,
+    nextMovement,
+    prevMovement,
+    getElapsedSeconds,
+    stopPlayback,
+  } = usePlayback()
   const { accentColor, panelTheme, setPanelTheme } = useSettings()
   const trackRef = useRef<HTMLDivElement>(null)
   const [seeking, setSeeking] = useState(false)
-  const [justChangedMovement, setJustChangedMovement] = useState(false)
-  const prevMovementIdRef = useRef(currentMovementId)
 
-  useEffect(() => {
-    if (prevMovementIdRef.current === currentMovementId) return
-    prevMovementIdRef.current = currentMovementId
-    setJustChangedMovement(true)
-    const timeout = setTimeout(() => setJustChangedMovement(false), 700)
-    return () => clearTimeout(timeout)
-  }, [currentMovementId])
+  const [progress, setProgressDirectly] = useSmoothProgress({
+    isPlaying,
+    durationSeconds,
+    getElapsedSeconds,
+    seeking,
+    resetKey: currentMovementId,
+  })
 
   if (!work || !recording || currentMovementId == null) {
     return <div className={styles.empty}>Nothing playing. Pick a recording from a work to begin.</div>
@@ -59,29 +71,17 @@ export function NowPlaying() {
     if (!track || durationSeconds <= 0) return
     const rect = track.getBoundingClientRect()
     const ratio = Math.min(Math.max((e.clientX - rect.left) / rect.width, 0), 1)
+    setProgressDirectly(ratio)
     seekTo(ratio * durationSeconds)
   }
 
-  const progressPct = durationSeconds > 0 ? (elapsedSeconds / durationSeconds) * 100 : 0
+  const progressPct = progress * 100
 
   return (
     <div className={styles.panel} style={panelStyle}>
       <div className={styles.artwork}>
         <div className={styles.artworkInset} />
-        <Sunburst
-          size={320}
-          fg={panelFg}
-          accent={accentColor}
-          spinning={isPlaying}
-          progress={durationSeconds > 0 ? elapsedSeconds / durationSeconds : 0}
-          needleTransition={
-            seeking
-              ? 'none'
-              : justChangedMovement
-                ? 'cx 0.65s cubic-bezier(0.22, 1, 0.36, 1), cy 0.65s cubic-bezier(0.22, 1, 0.36, 1)'
-                : 'cx 0.26s linear, cy 0.26s linear'
-          }
-        />
+        <Sunburst size={320} fg={panelFg} accent={accentColor} spinning={isPlaying} progress={progress} />
         <button
           onClick={() => setPanelTheme(dark ? 'light' : 'dark')}
           aria-label="Toggle panel theme"
@@ -101,7 +101,12 @@ export function NowPlaying() {
 
       <div className={styles.content}>
         <div>
-          <div className={styles.label}>Now Playing</div>
+          <div className={styles.topRow}>
+            <div className={styles.label}>Now Playing</div>
+            <button onClick={stopPlayback} aria-label="Close player" className={styles.closeButton}>
+              close ×
+            </button>
+          </div>
           <div className={styles.composerName}>{work.composer_name}</div>
           <div className={styles.workTitle}>{work.title}</div>
           {currentMovement && (
@@ -153,14 +158,8 @@ export function NowPlaying() {
             onPointerUp={() => setSeeking(false)}
             onPointerCancel={() => setSeeking(false)}
           >
-            <div
-              className={`${styles.progressFill} ${seeking ? styles.noTransition : ''}`}
-              style={{ width: `${progressPct}%` }}
-            />
-            <div
-              className={`${styles.progressHandle} ${seeking ? styles.noTransition : ''}`}
-              style={{ left: `${progressPct}%` }}
-            />
+            <div className={styles.progressFill} style={{ width: `${progressPct}%` }} />
+            <div className={styles.progressHandle} style={{ left: `${progressPct}%` }} />
           </div>
           <div className={`${styles.timeRow} tabular`}>
             <span>{formatDuration(elapsedSeconds)}</span>

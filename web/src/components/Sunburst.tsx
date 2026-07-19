@@ -16,23 +16,10 @@ interface SunburstProps {
   spinning?: boolean
   /** 0–1 through the current movement; when set, draws a needle dot spiraling toward center */
   progress?: number
-  /** CSS transition for the needle's cx/cy — e.g. a quick linear tween between
-   * playback ticks, a slower eased one when a new movement resets it back
-   * out to the edge, or 'none' while actively scrubbing. Defaults to a quick
-   * linear tween. */
-  needleTransition?: string
 }
 
 /** The record-label sunburst motif — concentric circles + 24 radiating hairlines + a center accent dot. */
-export function Sunburst({
-  size,
-  fg,
-  accent,
-  rays = true,
-  spinning = false,
-  progress,
-  needleTransition = 'cx 0.26s linear, cy 0.26s linear',
-}: SunburstProps) {
+export function Sunburst({ size, fg, accent, rays = true, spinning = false, progress }: SunburstProps) {
   const needleR = NEEDLE_OUTER_R - (NEEDLE_OUTER_R - NEEDLE_INNER_R) * Math.min(Math.max(progress ?? 0, 0), 1)
   const angleRad = (NEEDLE_ANGLE_DEG * Math.PI) / 180
   const needleX = 100 + needleR * Math.sin(angleRad)
@@ -62,11 +49,11 @@ export function Sunburst({
             />
           ))}
         <circle cx="100" cy="100" r="58" stroke={fg} strokeOpacity="0.5" fill="none" />
+        {/* run-out groove — where the needle settles once a movement finishes */}
+        <circle cx="100" cy="100" r={NEEDLE_INNER_R} stroke={fg} strokeOpacity="0.35" fill="none" />
         <circle cx="100" cy="100" r="5" fill={accent} />
       </g>
-      {progress !== undefined && (
-        <circle cx={needleX} cy={needleY} r="4" fill={accent} style={{ transition: needleTransition }} />
-      )}
+      {progress !== undefined && <circle cx={needleX} cy={needleY} r="4" fill={accent} />}
     </svg>
   )
 }

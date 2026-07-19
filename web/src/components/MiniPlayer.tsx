@@ -1,6 +1,7 @@
 import { useLocation, useNavigate } from 'react-router-dom'
 import { formatDuration, toRoman } from '../lib/format'
 import { usePlayback } from '../playback/PlaybackContext'
+import { useSmoothProgress } from '../playback/useSmoothProgress'
 import { useSettings } from '../settings/SettingsContext'
 import { Sunburst } from './Sunburst'
 import styles from './MiniPlayer.module.css'
@@ -11,8 +12,20 @@ export function MiniPlayer() {
   const navigate = useNavigate()
   const location = useLocation()
   const { accentColor } = useSettings()
-  const { work, currentMovementId, isPlaying, elapsedSeconds, durationSeconds, togglePlayPause, nextMovement, prevMovement } =
-    usePlayback()
+  const {
+    work,
+    currentMovementId,
+    isPlaying,
+    elapsedSeconds,
+    durationSeconds,
+    togglePlayPause,
+    nextMovement,
+    prevMovement,
+    getElapsedSeconds,
+    stopPlayback,
+  } = usePlayback()
+
+  const [progress] = useSmoothProgress({ isPlaying, durationSeconds, getElapsedSeconds, resetKey: currentMovementId })
 
   // redundant on the Now Playing screen itself, which already is the
   // expanded player — the mini-player is for every other screen
@@ -23,11 +36,9 @@ export function MiniPlayer() {
     ? `${work.composer_name} — ${toRoman(movement.movement_number)}. ${movement.name ?? 'Untitled'}`
     : work.composer_name
 
-  const progressPct = durationSeconds > 0 ? (elapsedSeconds / durationSeconds) * 100 : 0
-
   return (
     <div className={styles.bar}>
-      <div className={styles.progressLine} style={{ width: `${progressPct}%` }} />
+      <div className={styles.progressLine} style={{ width: `${progress * 100}%` }} />
       <div className={styles.sunburst}>
         <Sunburst size={26} fg={INK} accent={accentColor} rays={false} spinning={isPlaying} />
       </div>
@@ -48,6 +59,9 @@ export function MiniPlayer() {
           <div className={styles.playTriangle} role="button" aria-label="Play" onClick={togglePlayPause} />
         )}
         <div className={`${styles.triangle} next`} role="button" aria-label="Next" onClick={nextMovement} />
+        <button className={styles.close} aria-label="Close player" onClick={stopPlayback}>
+          ×
+        </button>
       </div>
     </div>
   )

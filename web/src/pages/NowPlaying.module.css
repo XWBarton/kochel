@@ -65,12 +65,34 @@
   }
 }
 
+.topRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 18px;
+}
+
 .label {
   font-size: 12px;
   letter-spacing: 0.28em;
   text-transform: uppercase;
   opacity: 0.6;
-  margin-bottom: 18px;
+}
+
+.closeButton {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.4;
+  background: none;
+  border: none;
+  color: inherit;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.closeButton:hover {
+  opacity: 0.9;
 }
 
 .composerName {
@@ -200,7 +222,6 @@
   top: 8px;
   height: 1px;
   background: var(--accent);
-  transition: width 0.26s linear;
 }
 
 .progressHandle {
@@ -211,11 +232,6 @@
   border-radius: 50%;
   background: var(--accent);
   margin-left: -4px;
-  transition: left 0.26s linear;
-}
-
-.noTransition {
-  transition: none;
 }
 
 .timeRow {
