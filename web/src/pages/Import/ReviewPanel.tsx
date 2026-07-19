@@ -36,6 +36,26 @@ export function ReviewPanel({ group, onCommitted, onCancel }: ReviewPanelProps) 
     setError(null)
   }, [group])
 
+  // When the work has exactly as many movements as there are files, the
+  // mapping is unambiguous — same track-number order used to guess the
+  // movement names in the first place — so fill it in rather than making
+  // every track's movement number(s) be retyped by hand (painful and easy
+  // to miss one on a large anthology work with hundreds of tracks).
+  useEffect(() => {
+    if (!work || work.movements.length !== tracks.length) return
+    if (!tracks.every((t) => t.movementNumbers.length === 0)) return
+
+    const ordered = [...tracks].sort((a, b) => {
+      if (a.trackNumber != null && b.trackNumber != null) return a.trackNumber - b.trackNumber
+      if (a.trackNumber != null) return -1
+      if (b.trackNumber != null) return 1
+      return a.file.filename.localeCompare(b.file.filename)
+    })
+    const movementNumberByPath = new Map(ordered.map((t, i) => [t.file.relative_path, i + 1]))
+    setTracks(tracks.map((t) => ({ ...t, movementNumbers: [movementNumberByPath.get(t.file.relative_path)!] })))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [work?.movements.length, tracks.length])
+
   function updateWork(newComposer: ReviewComposer | null) {
     setComposer(newComposer)
     setWork(null)
