@@ -54,6 +54,7 @@ export function ImportPage() {
         selectedDir={selected?.relative_dir ?? null}
         onSelect={setSelected}
         onRescan={runScan}
+        onDiscarded={runScan}
         scanning={scanning}
         scanMessage={scanMessage}
       />

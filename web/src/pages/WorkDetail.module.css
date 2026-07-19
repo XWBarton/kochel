@@ -4,13 +4,39 @@
   padding: 0 48px;
 }
 
+.topRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 10px;
+}
+
 .breadcrumb {
   font-size: 13px;
   letter-spacing: 0.2em;
   text-transform: uppercase;
   opacity: 0.6;
-  margin-bottom: 10px;
   display: inline-block;
+}
+
+.deleteLink {
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.4;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-family: inherit;
+}
+
+.deleteLink:hover {
+  opacity: 0.9;
+}
+
+.deleteLink:disabled {
+  cursor: default;
+  opacity: 0.3;
 }
 
 .title {

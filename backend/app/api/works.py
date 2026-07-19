@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.orm import selectinload
 
@@ -69,6 +69,19 @@ async def get_work(work_id: int, session: SessionDep) -> WorkDetail:
             "movements": [MovementOut.model_validate(m) for m in work.movements],
         }
     )
+
+
+@router.delete("/works/{work_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_work(work_id: int, session: SessionDep) -> None:
+    """Deletes a work and everything under it (movements, recordings,
+    tracks) via the DB's ON DELETE CASCADE — the composer row and any other
+    works it has are untouched. Does not remove the underlying audio files
+    on disk."""
+    work = await session.get(Work, work_id)
+    if work is None:
+        raise HTTPException(status_code=404, detail="Work not found")
+    await session.delete(work)
+    await session.commit()
 
 
 @router.get("/works/{work_id}/recordings", response_model=RecordingListResponse)

@@ -37,6 +37,13 @@ export function getWorkRecordings(workId: number): Promise<RecordingListResponse
   return get(`/works/${workId}/recordings`)
 }
 
+export async function deleteWork(workId: number): Promise<void> {
+  const resp = await fetch(`${API_ROOT}/works/${workId}`, { method: 'DELETE' })
+  if (!resp.ok) {
+    throw new Error(`${resp.status} ${resp.statusText} — /works/${workId}`)
+  }
+}
+
 export function search(query: string): Promise<SearchResponse> {
   return get(`/search?q=${encodeURIComponent(query)}`)
 }

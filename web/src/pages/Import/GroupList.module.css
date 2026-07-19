@@ -5,17 +5,12 @@
 
 .row {
   display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  gap: 12px;
-  padding: 14px 10px;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px;
   margin: 0 -10px;
   border-bottom: 1px solid var(--divider);
   border-radius: 4px;
-  cursor: pointer;
-  width: calc(100% + 20px);
-  text-align: left;
-  background: none;
   transition: background-color 120ms ease;
 }
 
@@ -25,6 +20,44 @@
 
 .row.active {
   color: var(--accent);
+}
+
+.rowMain {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  padding: 14px 0;
+  flex: 1;
+  min-width: 0;
+  cursor: pointer;
+  text-align: left;
+  background: none;
+  border: none;
+  font: inherit;
+  color: inherit;
+}
+
+.remove {
+  flex-shrink: 0;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.35;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-family: inherit;
+  padding: 6px 4px;
+}
+
+.remove:hover {
+  opacity: 0.9;
+}
+
+.remove:disabled {
+  cursor: default;
+  opacity: 0.25;
 }
 
 .path {

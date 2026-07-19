@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
-import { Link, useParams } from 'react-router-dom'
-import { getWork, getWorkRecordings } from '../api/client'
+import { Link, useNavigate, useParams } from 'react-router-dom'
+import { deleteWork, getWork, getWorkRecordings } from '../api/client'
 import type { RecordingListItem, WorkDetail as WorkDetailType } from '../api/types'
 import { formatDuration, toRoman } from '../lib/format'
 import { findMovementTiming } from '../playback/movementTiming'
@@ -18,8 +18,10 @@ function recordingCredit(recording: RecordingListItem): string {
 export function WorkDetail() {
   const { workId } = useParams()
   const id = Number(workId)
+  const navigate = useNavigate()
   const [work, setWork] = useState<WorkDetailType | null>(null)
   const [recordings, setRecordings] = useState<RecordingListItem[] | null>(null)
+  const [deleting, setDeleting] = useState(false)
   const { playRecording } = usePlayback()
 
   useEffect(() => {
@@ -31,6 +33,22 @@ export function WorkDetail() {
 
   if (work === null || recordings === null) return null
 
+  async function handleDelete() {
+    if (!work) return
+    const confirmed = window.confirm(
+      `Delete "${work.title}"? This removes it and all ${recordings?.length ?? 0} recording(s) from your library permanently. Audio files on disk are not touched.`,
+    )
+    if (!confirmed) return
+    setDeleting(true)
+    try {
+      await deleteWork(work.id)
+      navigate(`/composers/${work.composer_id}`)
+    } catch {
+      setDeleting(false)
+      window.alert('Delete failed — please try again.')
+    }
+  }
+
   const referenceRecording = recordings.find((r) => r.is_default_in_library) ?? recordings[0] ?? null
   const movements = [...work.movements].sort((a, b) => a.movement_number - b.movement_number)
   const metaParts = [
@@ -41,9 +59,14 @@ export function WorkDetail() {
 
   return (
     <div className={styles.wrap}>
-      <Link className={styles.breadcrumb} to={`/composers/${work.composer_id}`}>
-        {work.composer_name}
-      </Link>
+      <div className={styles.topRow}>
+        <Link className={styles.breadcrumb} to={`/composers/${work.composer_id}`}>
+          {work.composer_name}
+        </Link>
+        <button className={styles.deleteLink} onClick={handleDelete} disabled={deleting}>
+          {deleting ? 'Deleting…' : 'Delete work'}
+        </button>
+      </div>
       <div className={styles.title}>{work.title}</div>
       <div className={styles.meta}>{metaParts.join(' · ')}</div>
 

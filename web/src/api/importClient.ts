@@ -30,6 +30,23 @@ export function scanLibrary(): Promise<ScanResponse> {
   return get('/scan')
 }
 
+export async function discardPending(relativePaths: string[]): Promise<void> {
+  const resp = await fetch(`${IMPORT_ROOT}/discard`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ relative_paths: relativePaths }),
+  })
+  if (!resp.ok) {
+    let detail = resp.statusText
+    try {
+      detail = (await resp.json()).detail || detail
+    } catch {
+      // non-JSON error body
+    }
+    throw new Error(detail)
+  }
+}
+
 export function searchComposers(query: string): Promise<ComposerSearchResult[]> {
   return get(`/composers/search?q=${encodeURIComponent(query)}`)
 }

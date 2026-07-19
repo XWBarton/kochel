@@ -7,7 +7,7 @@ from sqlalchemy.orm import selectinload
 from app.api.deps import SessionDep
 from app.config import settings
 from app.ingest.scanner import scan_file, scan_library
-from app.ingest.upload import UploadRejected, resolve_upload_destination
+from app.ingest.upload import UploadRejected, resolve_library_file, resolve_upload_destination
 from app.integrations import openopus
 from app.models import (
     Composer,
@@ -23,6 +23,9 @@ from app.models import (
 )
 from app.schemas.import_ import (
     ComposerSearchResult,
+    DiscardPendingRequest,
+    DiscardPendingResponse,
+    DiscardPendingResult,
     EnsembleSearchResult,
     ImportCommitRequest,
     ImportCommitResponse,
@@ -108,6 +111,43 @@ async def scan(session: SessionDep) -> ScanResponse:
             for g in groups
         ],
         total_files=total_files,
+    )
+
+
+@router.post("/discard", response_model=DiscardPendingResponse)
+async def discard_pending(payload: DiscardPendingRequest) -> DiscardPendingResponse:
+    """Deletes specific not-yet-imported files from MUSIC_LIBRARY_ROOT (e.g.
+    an unwanted upload) — never touches anything already linked to a track.
+    Also removes now-empty parent directories up to the library root, purely
+    for tidiness."""
+    results: list[DiscardPendingResult] = []
+    root = settings.music_library_root.resolve()
+
+    for relative_path in payload.relative_paths:
+        try:
+            target = resolve_library_file(relative_path)
+        except UploadRejected as exc:
+            results.append(DiscardPendingResult(relative_path=relative_path, status="rejected", detail=exc.reason))
+            continue
+
+        if not target.is_file():
+            results.append(DiscardPendingResult(relative_path=relative_path, status="not_found", detail="no such file"))
+            continue
+
+        target.unlink()
+        results.append(DiscardPendingResult(relative_path=relative_path, status="deleted", detail="removed"))
+
+        parent = target.parent
+        while parent != root and parent.is_relative_to(root):
+            try:
+                parent.rmdir()
+            except OSError:
+                break
+            parent = parent.parent
+
+    return DiscardPendingResponse(
+        results=results,
+        deleted_count=sum(1 for r in results if r.status == "deleted"),
     )
 
 

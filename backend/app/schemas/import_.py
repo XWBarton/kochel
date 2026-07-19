@@ -39,6 +39,21 @@ class UploadResponse(BaseModel):
     rejected_count: int
 
 
+class DiscardPendingRequest(BaseModel):
+    relative_paths: list[str]
+
+
+class DiscardPendingResult(BaseModel):
+    relative_path: str
+    status: Literal["deleted", "not_found", "rejected"]
+    detail: str
+
+
+class DiscardPendingResponse(BaseModel):
+    results: list[DiscardPendingResult]
+    deleted_count: int
+
+
 class ComposerSearchResult(BaseModel):
     source: Literal["library", "openopus"]
     id: int | None = None
