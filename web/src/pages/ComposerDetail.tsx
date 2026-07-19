@@ -100,12 +100,7 @@ export function ComposerDetail() {
     <div className={styles.wrap}>
       <div className={styles.header}>
         <div>
-          <div className={styles.nameRow}>
-            <div className={styles.name}>{composer.name}</div>
-            <button className={styles.editLink} onClick={() => (editing ? setEditing(false) : startEditing())}>
-              {editing ? 'Close' : 'Edit'}
-            </button>
-          </div>
+          <div className={styles.name}>{composer.name}</div>
           {!editing && (
             <div className={styles.meta}>
               {[formatComposerDates(composer.birth_year, composer.death_year), composer.period]
@@ -114,8 +109,13 @@ export function ComposerDetail() {
             </div>
           )}
         </div>
-        <div className={styles.catalogued}>
-          {works.length} {works.length === 1 ? 'work' : 'works'} catalogued
+        <div className={styles.headerRight}>
+          <div className={styles.catalogued}>
+            {works.length} {works.length === 1 ? 'work' : 'works'} catalogued
+          </div>
+          <button className={styles.editLink} onClick={() => (editing ? setEditing(false) : startEditing())}>
+            {editing ? 'Close' : 'Edit'}
+          </button>
         </div>
       </div>
 

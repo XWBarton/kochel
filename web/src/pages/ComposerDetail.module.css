@@ -19,10 +19,11 @@
   line-height: 1;
 }
 
-.nameRow {
+.headerRight {
   display: flex;
-  align-items: baseline;
-  gap: 16px;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 10px;
 }
 
 .editLink {
