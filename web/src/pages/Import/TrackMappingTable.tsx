@@ -20,6 +20,10 @@ export function TrackMappingTable({ work, tracks, onChange }: TrackMappingTableP
     onChange(tracks.map((t, idx) => (idx === i ? { ...t, ...patch } : t)))
   }
 
+  function removeTrack(i: number) {
+    onChange(tracks.filter((_, idx) => idx !== i))
+  }
+
   const movementNumbers = work.movements.map((m) => m.movementNumber).join(', ')
 
   return (
@@ -28,6 +32,11 @@ export function TrackMappingTable({ work, tracks, onChange }: TrackMappingTableP
         This work has movement(s): {movementNumbers || '(none yet — add movements above)'}. Enter which
         movement number(s) each file covers — most files cover exactly one.
       </div>
+      <div className={styles.hint}>
+        If this folder actually contains more than one work (e.g. a two-symphony album), remove that
+        other work's files below — they're only skipped from <em>this</em> commit, not deleted — trim the
+        movements above to match, commit this one, then Rescan to review the rest as their own work.
+      </div>
       <table className={styles.table}>
         <thead>
           <tr>
@@ -35,6 +44,7 @@ export function TrackMappingTable({ work, tracks, onChange }: TrackMappingTableP
             <th>Track #</th>
             <th>Disc #</th>
             <th>Movement #(s)</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
@@ -64,6 +74,16 @@ export function TrackMappingTable({ work, tracks, onChange }: TrackMappingTableP
                   value={t.movementNumbers.join(',')}
                   onChange={(e) => update(i, { movementNumbers: parseMovementNumbers(e.target.value) })}
                 />
+              </td>
+              <td>
+                <button
+                  className={shared.repeatRowRemove}
+                  onClick={() => removeTrack(i)}
+                  aria-label={`Remove ${t.file.filename} from this batch`}
+                  title="Skip this file for now — leaves it pending for a later Rescan"
+                >
+                  ✕
+                </button>
               </td>
             </tr>
           ))}
