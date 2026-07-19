@@ -129,19 +129,18 @@ export function PlaybackProvider({ children }: { children: ReactNode }) {
       movementStartRef.current = timing.start
       movementDurationRef.current = timing.duration
 
+      // Setting currentTime before metadata has loaded is well-defined
+      // (the seek is deferred until it's available) — gating play() behind
+      // a manual 'loadedmetadata' listener instead was unreliable in
+      // practice (the event doesn't reliably fire for this range-requested
+      // audio through the proxy chain), silently leaving playback never
+      // actually started.
       if (currentTrackIdRef.current !== timing.track.id) {
         currentTrackIdRef.current = timing.track.id
         audio.src = trackStreamUrl(timing.track.id)
-        const onLoaded = () => {
-          audio.currentTime = seekTime
-          if (autoplay) void audio.play()
-          audio.removeEventListener('loadedmetadata', onLoaded)
-        }
-        audio.addEventListener('loadedmetadata', onLoaded)
-      } else {
-        audio.currentTime = seekTime
-        if (autoplay) void audio.play()
       }
+      audio.currentTime = seekTime
+      if (autoplay) void audio.play()
 
       saveSession({ workId: targetWork.id, recordingId: targetRecording.id, movementId, elapsedSeconds: seekOffset })
     },
