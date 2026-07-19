@@ -94,6 +94,7 @@ export interface RecordingListItem {
   label: string | null
   recording_year: number | null
   release_year: number | null
+  notes: string | null
   is_default_in_library: boolean
   total_duration_seconds: number
   tracks: TrackOut[]

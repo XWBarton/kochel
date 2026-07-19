@@ -35,6 +35,7 @@ class RecordingListItem(BaseModel):
     label: str | None
     recording_year: int | None
     release_year: int | None
+    notes: str | None
     is_default_in_library: bool
     total_duration_seconds: float
     tracks: list[TrackOut]

@@ -1,11 +1,14 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
-import { deleteWork, getWork, getWorkRecordings } from '../api/client'
+import { deleteWork, getWork, getWorkRecordings, updateRecording } from '../api/client'
 import type { RecordingListItem, WorkDetail as WorkDetailType } from '../api/types'
 import { formatDuration, toRoman } from '../lib/format'
+import { RecordingForm } from './Import/RecordingForm'
+import type { ReviewRecording } from './Import/reviewTypes'
 import { findMovementTiming } from '../playback/movementTiming'
 import { usePlayback } from '../playback/PlaybackContext'
 import styles from './WorkDetail.module.css'
+import shared from './Import/ImportShared.module.css'
 
 function recordingCredit(recording: RecordingListItem): string {
   const parts: string[] = []
@@ -13,6 +16,24 @@ function recordingCredit(recording: RecordingListItem): string {
   const conductor = recording.performers.find((p) => p.role === 'conductor')
   if (conductor) parts.push(conductor.person.name)
   return parts.join(' · ') || 'Unattributed performance'
+}
+
+function recordingToReviewRecording(r: RecordingListItem): ReviewRecording {
+  return {
+    ensembleId: r.ensemble?.id ?? null,
+    ensembleName: r.ensemble?.name ?? '',
+    performers: r.performers.map((p) => ({
+      personId: p.person.id,
+      name: p.person.name,
+      role: p.role,
+      instrument: p.instrument ?? '',
+    })),
+    label: r.label ?? '',
+    recordingYear: r.recording_year,
+    releaseYear: r.release_year,
+    notes: r.notes ?? '',
+    isDefaultInLibrary: r.is_default_in_library,
+  }
 }
 
 export function WorkDetail() {
@@ -23,6 +44,10 @@ export function WorkDetail() {
   const [recordings, setRecordings] = useState<RecordingListItem[] | null>(null)
   const [deleting, setDeleting] = useState(false)
   const [expandedMovementId, setExpandedMovementId] = useState<number | null>(null)
+  const [editingRecordingId, setEditingRecordingId] = useState<number | null>(null)
+  const [editValue, setEditValue] = useState<ReviewRecording | null>(null)
+  const [savingEdit, setSavingEdit] = useState(false)
+  const [editError, setEditError] = useState<string | null>(null)
   const { playRecording } = usePlayback()
 
   useEffect(() => {
@@ -77,6 +102,45 @@ export function WorkDetail() {
     setExpandedMovementId((prev) => (prev === movementId ? null : movementId))
   }
 
+  function startEditing(recording: RecordingListItem) {
+    setEditingRecordingId(recording.id)
+    setEditValue(recordingToReviewRecording(recording))
+    setEditError(null)
+  }
+
+  async function handleSaveEdit() {
+    if (editingRecordingId == null || !editValue) return
+    setSavingEdit(true)
+    setEditError(null)
+    try {
+      await updateRecording(editingRecordingId, {
+        ensemble_id: editValue.ensembleId,
+        ensemble_name: editValue.ensembleId ? null : editValue.ensembleName || null,
+        label: editValue.label || null,
+        recording_year: editValue.recordingYear,
+        release_year: editValue.releaseYear,
+        notes: editValue.notes || null,
+        is_default_in_library: editValue.isDefaultInLibrary,
+        performers: editValue.performers.map((p) => ({
+          person_id: p.personId,
+          name: p.personId ? null : p.name,
+          sort_name: null,
+          role: p.role,
+          instrument: p.instrument || null,
+          credited_order: null,
+        })),
+      })
+      const fresh = await getWorkRecordings(id)
+      setRecordings(fresh.items)
+      setEditingRecordingId(null)
+      setEditValue(null)
+    } catch (e) {
+      setEditError(e instanceof Error ? e.message : 'Save failed')
+    } finally {
+      setSavingEdit(false)
+    }
+  }
+
   return (
     <div className={styles.wrap}>
       <div className={styles.topRow}>
@@ -102,21 +166,40 @@ export function WorkDetail() {
       </div>
 
       {recordings.map((recording) => (
-        <div className={styles.recordingRow} key={recording.id}>
-          <button
-            className="play-triangle"
-            aria-label={`Play ${recordingCredit(recording)}`}
-            onClick={() => playRecording(work, recording)}
-          />
-          <div className={styles.recordingInfo}>
-            <div className={styles.recordingTitle}>{recordingCredit(recording)}</div>
-            <div className={styles.recordingMeta}>
-              {[recording.label, recording.recording_year].filter(Boolean).join(' · ')}
+        <div key={recording.id}>
+          <div className={styles.recordingRow}>
+            <button
+              className="play-triangle"
+              aria-label={`Play ${recordingCredit(recording)}`}
+              onClick={() => playRecording(work, recording)}
+            />
+            <div className={styles.recordingInfo}>
+              <div className={styles.recordingTitle}>{recordingCredit(recording)}</div>
+              <div className={styles.recordingMeta}>
+                {[recording.label, recording.recording_year].filter(Boolean).join(' · ')}
+              </div>
             </div>
+            <div className={`${styles.recordingDuration} tabular`}>
+              {formatDuration(recording.total_duration_seconds)}
+            </div>
+            <button
+              className={styles.editRecordingLink}
+              onClick={() => (editingRecordingId === recording.id ? setEditingRecordingId(null) : startEditing(recording))}
+            >
+              {editingRecordingId === recording.id ? 'Close' : 'Edit'}
+            </button>
           </div>
-          <div className={`${styles.recordingDuration} tabular`}>
-            {formatDuration(recording.total_duration_seconds)}
-          </div>
+          {editingRecordingId === recording.id && editValue && (
+            <div className={styles.recordingEditPanel}>
+              <RecordingForm value={editValue} onChange={setEditValue} />
+              <div className={shared.buttonRow} style={{ marginTop: 12 }}>
+                <button className={shared.buttonPrimary} onClick={handleSaveEdit} disabled={savingEdit}>
+                  {savingEdit ? 'Saving…' : 'Save changes'}
+                </button>
+                {editError && <span className={shared.statusError}>{editError}</span>}
+              </div>
+            </div>
+          )}
         </div>
       ))}
 

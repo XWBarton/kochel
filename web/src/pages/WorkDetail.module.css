@@ -113,6 +113,28 @@
   opacity: 0.55;
 }
 
+.editRecordingLink {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.4;
+  cursor: pointer;
+  background: none;
+  border: none;
+  font-family: inherit;
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+
+.editRecordingLink:hover {
+  opacity: 0.9;
+}
+
+.recordingEditPanel {
+  padding: 4px 0 24px 38px;
+  border-bottom: 1px solid var(--divider);
+}
+
 .movementsSection {
   margin-top: 32px;
 }

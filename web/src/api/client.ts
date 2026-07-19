@@ -1,6 +1,7 @@
 import type {
   ComposerListItem,
   ComposerListResponse,
+  RecordingListItem,
   RecordingListResponse,
   SearchResponse,
   WorkDetail,
@@ -42,6 +43,42 @@ export async function deleteWork(workId: number): Promise<void> {
   if (!resp.ok) {
     throw new Error(`${resp.status} ${resp.statusText} — /works/${workId}`)
   }
+}
+
+export interface RecordingUpdatePayload {
+  ensemble_id: number | null
+  ensemble_name: string | null
+  label: string | null
+  recording_year: number | null
+  release_year: number | null
+  notes: string | null
+  is_default_in_library: boolean
+  performers: {
+    person_id: number | null
+    name: string | null
+    sort_name: string | null
+    role: string
+    instrument: string | null
+    credited_order: number | null
+  }[]
+}
+
+export async function updateRecording(recordingId: number, payload: RecordingUpdatePayload): Promise<RecordingListItem> {
+  const resp = await fetch(`${API_ROOT}/recordings/${recordingId}`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  })
+  if (!resp.ok) {
+    let detail = resp.statusText
+    try {
+      detail = (await resp.json()).detail || detail
+    } catch {
+      // non-JSON error body
+    }
+    throw new Error(detail)
+  }
+  return resp.json() as Promise<RecordingListItem>
 }
 
 export function search(query: string): Promise<SearchResponse> {
