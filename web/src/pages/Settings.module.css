@@ -1,0 +1,125 @@
+.wrap {
+  max-width: 1180px;
+  margin: 40px auto 0;
+  padding: 0 48px 80px;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: 44px;
+  margin-bottom: 8px;
+}
+
+.intro {
+  font-size: 15px;
+  opacity: 0.6;
+  margin-bottom: 40px;
+  max-width: 520px;
+}
+
+.sectionLabel {
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.55;
+  margin-bottom: 20px;
+}
+
+.swatchRow {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-bottom: 48px;
+}
+
+.swatch {
+  width: 140px;
+  text-align: left;
+  cursor: pointer;
+}
+
+.swatchFill {
+  width: 140px;
+  height: 140px;
+  border: 1px solid var(--ink);
+}
+
+.swatchLabel {
+  margin-top: 10px;
+  font-size: 14px;
+}
+
+.swatchHex {
+  font-size: 12px;
+  opacity: 0.5;
+  font-variant-numeric: tabular-nums;
+}
+
+.swatchTag {
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+.swatchTag.selected {
+  color: var(--accent);
+}
+
+.swatchTag.alternative {
+  opacity: 0.45;
+}
+
+.themeRow {
+  display: flex;
+  gap: 24px;
+}
+
+.themeOption {
+  width: 200px;
+  border: 1px solid var(--ink);
+  cursor: pointer;
+  text-align: left;
+  overflow: hidden;
+}
+
+.themeOption.active {
+  box-shadow: 0 0 0 2px var(--accent);
+  border-color: var(--accent);
+}
+
+.themePreview {
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.themePreview.dark {
+  background: var(--ink);
+}
+
+.themePreview.light {
+  background: var(--paper);
+}
+
+.themePreviewDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.themeLabel {
+  padding: 10px 12px;
+  font-size: 13px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.themeNote {
+  font-size: 13px;
+  opacity: 0.55;
+  margin-top: 16px;
+  max-width: 480px;
+}

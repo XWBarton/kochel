@@ -1,0 +1,91 @@
+.wrap {
+  max-width: 1180px;
+  margin: 40px auto 0;
+  padding: 0 48px;
+}
+
+.breadcrumb {
+  font-size: 13px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.6;
+  margin-bottom: 6px;
+  display: inline-block;
+}
+
+.heading {
+  font-family: var(--font-body);
+  font-size: 32px;
+  margin-bottom: 28px;
+}
+
+.grid {
+  display: grid;
+  overflow-x: auto;
+}
+
+.headerCell {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--ink);
+}
+
+.headerCell:first-child {
+  padding-left: 0;
+}
+
+.recEnsemble {
+  font-family: var(--font-body);
+  font-size: 18px;
+}
+
+.recConductor {
+  font-size: 12px;
+  opacity: 0.6;
+  margin-top: 2px;
+}
+
+.recLabel {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.5;
+  margin-top: 4px;
+}
+
+.defaultTag {
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-top: 8px;
+}
+
+.movementCell {
+  padding: 14px 16px 14px 0;
+  border-bottom: 1px solid var(--divider);
+  font-family: var(--font-body);
+}
+
+.movementCell .roman {
+  font-family: var(--font-display);
+  font-size: 16px;
+  margin-right: 10px;
+}
+
+.durationCell {
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--divider);
+}
+
+.totalLabel {
+  padding: 14px 16px 14px 0;
+  font-size: 12px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  opacity: 0.6;
+}
+
+.totalDuration {
+  padding: 14px 16px;
+  font-weight: 600;
+}

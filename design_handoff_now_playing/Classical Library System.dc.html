@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com"></link>
+  <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=EB+Garamond:ital,wght@0,400;0,600;1,400;1,500&display=swap" rel="stylesheet"></link>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #FAFAF7; }
+    ::selection { background: #B6401F; color: #FAFAF7; }
+  </style>
+</helmet>
+
+<div style="background:#FAFAF7;color:#161513;font-family:'EB Garamond',serif;min-height:100vh;padding:64px 0 120px;">
+
+  <div style="max-width:1180px;margin:0 auto;padding:0 48px 56px;border-bottom:1px solid #161513;">
+    <div style="font-size:12px;letter-spacing:0.28em;text-transform:uppercase;color:#161513;opacity:0.6;margin-bottom:10px;">Design System &amp; Anchor Screens</div>
+    <h1 style="font-family:'Abril Fatface',serif;font-size:44px;font-weight:400;margin:0;letter-spacing:0.01em;">Classical Library</h1>
+  </div>
+
+  <!-- SECTION 01 — TYPE & COLOR SYSTEM -->
+  <div style="max-width:1180px;margin:64px auto 0;padding:0 48px;">
+    <div style="font-size:12px;letter-spacing:0.28em;text-transform:uppercase;opacity:0.6;margin-bottom:24px;">01 — Type &amp; Color System</div>
+
+    <div style="display:flex;gap:64px;flex-wrap:wrap;margin-bottom:56px;">
+      <div>
+        <div style="font-size:12px;letter-spacing:0.2em;text-transform:uppercase;opacity:0.55;margin-bottom:12px;">Base — Ink &amp; Paper</div>
+        <div style="display:flex;gap:16px;">
+          <div style="width:120px;">
+            <div style="width:120px;height:120px;background:#161513;border:1px solid #161513;"></div>
+            <div style="margin-top:8px;font-size:14px;">Ink #161513</div>
+          </div>
+          <div style="width:120px;">
+            <div style="width:120px;height:120px;background:#FAFAF7;border:1px solid #161513;"></div>
+            <div style="margin-top:8px;font-size:14px;">Paper #FAFAF7</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div style="font-size:12px;letter-spacing:0.2em;text-transform:uppercase;opacity:0.55;margin-bottom:12px;">Accent — one only, meaning not decoration</div>
+        <div style="display:flex;gap:16px;">
+          <div style="width:120px;">
+            <div style="width:120px;height:120px;background:#B6401F;border:1px solid #161513;"></div>
+            <div style="margin-top:8px;font-size:14px;">Rust #B6401F</div>
+            <sc-if value="{{ isRust }}" hint-placeholder-val="{{ true }}">
+              <div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:{{ accent }};margin-top:2px;">Selected</div>
+            </sc-if>
+            <sc-if value="{{ !isRust }}">
+              <div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;opacity:0.5;margin-top:2px;">Alternative</div>
+            </sc-if>
+          </div>
+          <div style="width:120px;">
+            <div style="width:120px;height:120px;background:#1F6B63;border:1px solid #161513;"></div>
+            <div style="margin-top:8px;font-size:14px;">Deep teal #1F6B63</div>
+            <sc-if value="{{ isTeal }}">
+              <div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:{{ accent }};margin-top:2px;">Selected</div>
+            </sc-if>
+            <sc-if value="{{ !isTeal }}" hint-placeholder-val="{{ true }}">
+              <div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;opacity:0.5;margin-top:2px;">Alternative</div>
+            </sc-if>
+          </div>
+          <div style="width:120px;">
+            <div style="width:120px;height:120px;background:#B98A1E;border:1px solid #161513;"></div>
+            <div style="margin-top:8px;font-size:14px;">Mustard #B98A1E</div>
+            <sc-if value="{{ isMustard }}">
+              <div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:{{ accent }};margin-top:2px;">Selected</div>
+            </sc-if>
+            <sc-if value="{{ !isMustard }}" hint-placeholder-val="{{ true }}">
+              <div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;opacity:0.5;margin-top:2px;">Alternative</div>
+            </sc-if>
+          </div>
+          <div style="width:120px;">
+            <div style="width:120px;height:120px;background:#33489E;border:1px solid #161513;"></div>
+            <div style="margin-top:8px;font-size:14px;">Cobalt #33489E</div>
+            <sc-if value="{{ isCobalt }}">
+              <div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:{{ accent }};margin-top:2px;">Selected</div>
+            </sc-if>
+            <sc-if value="{{ !isCobalt }}" hint-placeholder-val="{{ true }}">
+              <div style="font-size:11px;letter-spacing:0.16em;text-transform:uppercase;opacity:0.5;margin-top:2px;">Alternative</div>
+            </sc-if>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="border-top:1px solid #161513;padding-top:4px;margin-bottom:4px;"></div>
+    <div style="border-top:1px solid #161513;margin-bottom:32px;"></div>
+
+    <div style="display:flex;gap:64px;flex-wrap:wrap;align-items:flex-end;">
+      <div>
+        <div style="font-size:12px;letter-spacing:0.2em;text-transform:uppercase;opacity:0.55;margin-bottom:14px;">Display — Abril Fatface</div>
+        <div style="font-family:'Abril Fatface',serif;font-size:64px;line-height:1;">Brahms</div>
+      </div>
+      <div>
+        <div style="font-size:12px;letter-spacing:0.2em;text-transform:uppercase;opacity:0.55;margin-bottom:14px;">Body — EB Garamond</div>
+        <div style="font-family:'EB Garamond',serif;font-size:26px;">Symphony No. 4 in E minor, Op. 98</div>
+        <div style="font-family:'EB Garamond',serif;font-style:italic;font-size:19px;opacity:0.75;margin-top:6px;">IV. Allegro energico e passionato</div>
+      </div>
+      <div>
+        <div style="font-size:12px;letter-spacing:0.2em;text-transform:uppercase;opacity:0.55;margin-bottom:14px;">Labels — tracked uppercase</div>
+        <div style="font-size:13px;letter-spacing:0.28em;text-transform:uppercase;">Now Playing</div>
+        <div style="font-size:13px;letter-spacing:0.28em;text-transform:uppercase;opacity:0.55;margin-top:8px;">Movements</div>
+      </div>
+      <div>
+        <div style="font-size:12px;letter-spacing:0.2em;text-transform:uppercase;opacity:0.55;margin-bottom:14px;">Roman numerals</div>
+        <div style="font-family:'Abril Fatface',serif;font-size:30px;display:flex;gap:20px;">
+          <span>I</span><span>II</span><span>III</span><span>IV</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 02 — NOW PLAYING WEB -->
+  <div style="max-width:1180px;margin:80px auto 0;padding:0 48px;">
+    <div style="font-size:12px;letter-spacing:0.28em;text-transform:uppercase;opacity:0.6;margin-bottom:24px;">02 — Now Playing · Web</div>
+
+    <div style="background:{{ panelBg }};color:{{ panelFg }};display:flex;min-height:760px;">
+      <div style="width:42%;display:flex;align-items:center;justify-content:center;border-right:1px solid {{ panelFg25 }};position:relative;">
+        <div style="position:absolute;top:1px;left:1px;right:1px;bottom:1px;border:1px solid {{ panelFg15 }};pointer-events:none;"></div>
+        <svg viewBox="0 0 200 200" width="360" height="360">
+          <circle cx="100" cy="100" r="95" stroke="{{ panelFg }}" stroke-opacity="0.5" fill="none"></circle>
+          <sc-for list="{{ sunburstAngles }}" as="angle" hint-placeholder-count="24">
+            <line x1="100" y1="6" x2="100" y2="28" stroke="{{ panelFg }}" stroke-opacity="0.55" stroke-width="1" transform="rotate({{ angle }} 100 100)"></line>
+          </sc-for>
+          <circle cx="100" cy="100" r="58" stroke="{{ panelFg }}" stroke-opacity="0.5" fill="none"></circle>
+          <circle cx="100" cy="100" r="5" fill="{{ accent }}"></circle>
+        </svg>
+      </div>
+
+      <div style="width:58%;padding:56px 64px;display:flex;flex-direction:column;justify-content:space-between;">
+        <div>
+          <div style="font-size:12px;letter-spacing:0.28em;text-transform:uppercase;opacity:0.6;margin-bottom:18px;">Now Playing</div>
+          <div style="font-family:'Abril Fatface',serif;font-size:56px;line-height:1;">Florence Price</div>
+          <div style="font-family:'EB Garamond',serif;font-size:24px;margin-top:14px;">Symphony No. 1 in E minor</div>
+          <div style="font-family:'EB Garamond',serif;font-style:italic;font-size:17px;opacity:0.7;margin-top:4px;">{{ currentMovement.roman }}. {{ currentMovement.tempo }}</div>
+          <div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;opacity:0.55;margin-top:16px;">Fort Smith Symphony · John Jeter, conductor · 2018 · Naxos</div>
+        </div>
+
+        <div>
+          <div style="border-top:1px solid {{ panelFg30 }};padding-top:3px;"></div>
+          <div style="border-top:1px solid {{ panelFg30 }};margin-bottom:8px;"></div>
+          <div style="font-size:12px;letter-spacing:0.24em;text-transform:uppercase;opacity:0.55;margin:14px 0;">Movements</div>
+          <sc-for list="{{ movements }}" as="m" hint-placeholder-count="4">
+            <div onClick="{{ m.select }}" style="display:flex;align-items:baseline;gap:18px;padding:11px 0;border-bottom:1px solid {{ panelFg15 }};cursor:pointer;">
+              <div style="font-family:'Abril Fatface',serif;font-size:19px;width:34px;color:{{ m.romanColor }};">{{ m.roman }}</div>
+              <div style="flex:1;font-family:'EB Garamond',serif;font-size:18px;color:{{ m.textColor }};">{{ m.tempo }}</div>
+              <div style="font-size:14px;opacity:0.55;font-variant-numeric:tabular-nums;">{{ m.durationLabel }}</div>
+            </div>
+          </sc-for>
+        </div>
+
+        <div style="margin-top:28px;">
+          <div style="position:relative;height:1px;background:{{ panelFg25 }};margin-bottom:10px;">
+            <div style="position:absolute;left:0;top:0;bottom:0;background:{{ accent }};width:{{ progressPct }}%;"></div>
+            <div style="position:absolute;top:-3.5px;width:8px;height:8px;border-radius:50%;background:{{ accent }};left:{{ progressPct }}%;margin-left:-4px;"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:13px;opacity:0.6;font-variant-numeric:tabular-nums;margin-bottom:22px;">
+            <span>{{ elapsedLabel }}</span>
+            <span>{{ remainingLabel }}</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:center;gap:36px;">
+            <div style="width:0;height:0;border-top:7px solid transparent;border-bottom:7px solid transparent;border-right:12px solid {{ panelFg }};opacity:0.85;cursor:pointer;"></div>
+            <div style="width:60px;height:60px;border-radius:50%;background:{{ accent }};display:flex;align-items:center;justify-content:center;cursor:pointer;">
+              <div style="display:flex;gap:5px;">
+                <div style="width:5px;height:18px;background:#FAFAF7;"></div>
+                <div style="width:5px;height:18px;background:#FAFAF7;"></div>
+              </div>
+            </div>
+            <div style="width:0;height:0;border-top:7px solid transparent;border-bottom:7px solid transparent;border-left:12px solid {{ panelFg }};opacity:0.85;cursor:pointer;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 03 — NOW PLAYING iOS -->
+  <div style="max-width:1180px;margin:80px auto 0;padding:0 48px;">
+    <div style="font-size:12px;letter-spacing:0.28em;text-transform:uppercase;opacity:0.6;margin-bottom:24px;">03 — Now Playing · iOS</div>
+
+    <x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ panelIsDark }}" hint-size="390px,844px">
+      <div style="background:{{ panelBg }};color:{{ panelFg }};height:100%;display:flex;flex-direction:column;padding:64px 28px 28px;font-family:'EB Garamond',serif;">
+        <div style="text-align:center;font-size:11px;letter-spacing:0.24em;text-transform:uppercase;opacity:0.55;margin:10px 0 18px;">Playing from Symphony No. 1</div>
+
+        <div style="display:flex;align-items:center;justify-content:center;margin-bottom:20px;">
+          <svg viewBox="0 0 200 200" width="228" height="228">
+            <circle cx="100" cy="100" r="95" stroke="{{ panelFg }}" stroke-opacity="0.5" fill="none"></circle>
+            <sc-for list="{{ sunburstAngles }}" as="angle2" hint-placeholder-count="24">
+              <line x1="100" y1="6" x2="100" y2="30" stroke="{{ panelFg }}" stroke-opacity="0.55" stroke-width="1" transform="rotate({{ angle2 }} 100 100)"></line>
+            </sc-for>
+            <circle cx="100" cy="100" r="58" stroke="{{ panelFg }}" stroke-opacity="0.5" fill="none"></circle>
+            <circle cx="100" cy="100" r="5" fill="{{ accent }}"></circle>
+          </svg>
+        </div>
+
+        <div style="text-align:center;">
+          <div style="font-family:'Abril Fatface',serif;font-size:32px;line-height:1.05;">Florence Price</div>
+          <div style="font-size:18px;margin-top:8px;">Symphony No. 1 in E minor</div>
+          <div style="font-style:italic;font-size:14px;opacity:0.7;margin-top:2px;">{{ currentMovement.roman }}. {{ currentMovement.tempo }}</div>
+        </div>
+
+        <div style="margin-top:22px;">
+          <div style="position:relative;height:1px;background:{{ panelFg25 }};margin-bottom:8px;">
+            <div style="position:absolute;left:0;top:0;bottom:0;background:{{ accent }};width:{{ progressPct }}%;"></div>
+            <div style="position:absolute;top:-3.5px;width:8px;height:8px;border-radius:50%;background:{{ accent }};left:{{ progressPct }}%;margin-left:-4px;"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:12px;opacity:0.6;font-variant-numeric:tabular-nums;">
+            <span>{{ elapsedLabel }}</span>
+            <span>{{ remainingLabel }}</span>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;justify-content:center;gap:40px;margin:20px 0 22px;">
+          <div style="width:0;height:0;border-top:8px solid transparent;border-bottom:8px solid transparent;border-right:14px solid {{ panelFg }};padding:15px 8px;"></div>
+          <div style="width:64px;height:64px;border-radius:50%;background:{{ accent }};display:flex;align-items:center;justify-content:center;">
+            <div style="display:flex;gap:6px;">
+              <div style="width:6px;height:20px;background:#FAFAF7;"></div>
+              <div style="width:6px;height:20px;background:#FAFAF7;"></div>
+            </div>
+          </div>
+          <div style="width:0;height:0;border-top:8px solid transparent;border-bottom:8px solid transparent;border-left:14px solid {{ panelFg }};padding:15px 8px;"></div>
+        </div>
+
+        <div style="border-top:1px solid {{ panelFg25 }};padding-top:3px;"></div>
+        <div style="border-top:1px solid {{ panelFg25 }};margin-bottom:10px;"></div>
+        <div style="font-size:11px;letter-spacing:0.2em;text-transform:uppercase;opacity:0.55;margin:10px 0;">Movements</div>
+        <div style="flex:1;overflow:auto;">
+          <sc-for list="{{ movements }}" as="mi" hint-placeholder-count="4">
+            <div onClick="{{ mi.select }}" style="display:flex;align-items:center;gap:14px;padding:13px 0;border-bottom:1px solid {{ panelFg15 }};min-height:44px;">
+              <div style="font-family:'Abril Fatface',serif;font-size:16px;width:26px;color:{{ mi.romanColor }};">{{ mi.roman }}</div>
+              <div style="flex:1;font-size:15px;color:{{ mi.textColor }};">{{ mi.tempo }}</div>
+              <div style="font-size:12px;opacity:0.5;font-variant-numeric:tabular-nums;">{{ mi.durationLabel }}</div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="font-size:10px;letter-spacing:0.16em;text-transform:uppercase;opacity:0.45;text-align:center;margin-top:8px;">Fort Smith Symphony · Jeter · 2018</div>
+      </div>
+    </x-import>
+  </div>
+
+  <!-- SECTION 04 — COMPOSER BROWSE (WEB) -->
+  <div style="max-width:1180px;margin:80px auto 0;padding:0 48px;">
+    <div style="font-size:12px;letter-spacing:0.28em;text-transform:uppercase;opacity:0.6;margin-bottom:24px;">04 — Composer Browse · Web</div>
+    <div style="border-top:1px solid #161513;padding-top:3px;"></div>
+    <div style="border-top:1px solid #161513;margin-bottom:8px;"></div>
+
+    <div style="display:flex;gap:40px;padding:28px 0;border-bottom:1px solid rgba(22,21,19,0.12);">
+      <div style="width:56px;flex-shrink:0;font-family:'Abril Fatface',serif;font-size:38px;opacity:0.85;">B</div>
+      <div style="flex:1;display:flex;align-items:baseline;justify-content:space-between;">
+        <div><span style="font-family:'Abril Fatface',serif;font-size:27px;">Johann Sebastian Bach</span><span style="font-family:'EB Garamond',serif;font-style:italic;font-size:15px;opacity:0.55;margin-left:14px;">1685–1750</span></div>
+        <div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;opacity:0.5;">6 works</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:40px;padding:28px 0;border-bottom:1px solid rgba(22,21,19,0.12);">
+      <div style="width:56px;flex-shrink:0;font-family:'Abril Fatface',serif;font-size:38px;opacity:0.85;">E</div>
+      <div style="flex:1;display:flex;align-items:baseline;justify-content:space-between;">
+        <div><span style="font-family:'Abril Fatface',serif;font-size:27px;">Julius Eastman</span><span style="font-family:'EB Garamond',serif;font-style:italic;font-size:15px;opacity:0.55;margin-left:14px;">1940–1990</span></div>
+        <div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;opacity:0.5;">5 works</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:40px;padding:28px 0;border-bottom:1px solid rgba(22,21,19,0.12);">
+      <div style="width:56px;flex-shrink:0;font-family:'Abril Fatface',serif;font-size:38px;opacity:0.85;">M</div>
+      <div style="flex:1;display:flex;align-items:baseline;justify-content:space-between;">
+        <div><span style="font-family:'Abril Fatface',serif;font-size:27px;">Fanny Mendelssohn</span><span style="font-family:'EB Garamond',serif;font-style:italic;font-size:15px;opacity:0.55;margin-left:14px;">1805–1847</span></div>
+        <div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;opacity:0.5;">9 works</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:40px;padding:28px 0;border-bottom:1px solid rgba(22,21,19,0.12);">
+      <div style="width:56px;flex-shrink:0;font-family:'Abril Fatface',serif;font-size:38px;opacity:0.85;">P</div>
+      <div style="flex:1;display:flex;align-items:baseline;justify-content:space-between;">
+        <div><span style="font-family:'Abril Fatface',serif;font-size:27px;">Florence Price</span><span style="font-family:'EB Garamond',serif;font-style:italic;font-size:15px;opacity:0.55;margin-left:14px;">1887–1953</span></div>
+        <div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;opacity:0.5;">14 works</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:40px;padding:28px 0;border-bottom:1px solid rgba(22,21,19,0.12);">
+      <div style="width:56px;flex-shrink:0;font-family:'Abril Fatface',serif;font-size:38px;opacity:0.85;">S</div>
+      <div style="flex:1;display:flex;flex-direction:column;gap:18px;">
+        <div style="display:flex;align-items:baseline;justify-content:space-between;">
+          <div><span style="font-family:'Abril Fatface',serif;font-size:27px;">Joseph Bologne, Chevalier de Saint-Georges</span><span style="font-family:'EB Garamond',serif;font-style:italic;font-size:15px;opacity:0.55;margin-left:14px;">1745–1799</span></div>
+          <div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;opacity:0.5;">8 works</div>
+        </div>
+        <div style="display:flex;align-items:baseline;justify-content:space-between;">
+          <div><span style="font-family:'Abril Fatface',serif;font-size:27px;">Clara Schumann</span><span style="font-family:'EB Garamond',serif;font-style:italic;font-size:15px;opacity:0.55;margin-left:14px;">1819–1896</span></div>
+          <div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;opacity:0.5;">11 works</div>
+        </div>
+        <div style="display:flex;align-items:baseline;justify-content:space-between;">
+          <div><span style="font-family:'Abril Fatface',serif;font-size:27px;">William Grant Still</span><span style="font-family:'EB Garamond',serif;font-style:italic;font-size:15px;opacity:0.55;margin-left:14px;">1895–1978</span></div>
+          <div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;opacity:0.5;">7 works</div>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex;gap:40px;padding:28px 0;border-bottom:1px solid rgba(22,21,19,0.12);">
+      <div style="width:56px;flex-shrink:0;font-family:'Abril Fatface',serif;font-size:38px;opacity:0.85;">W</div>
+      <div style="flex:1;display:flex;align-items:baseline;justify-content:space-between;">
+        <div><span style="font-family:'Abril Fatface',serif;font-size:27px;">Errollyn Wallen</span><span style="font-family:'EB Garamond',serif;font-style:italic;font-size:15px;opacity:0.55;margin-left:14px;">b. 1958</span></div>
+        <div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;opacity:0.5;">10 works</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 05 — COMPOSER DETAIL (WEB) -->
+  <div style="max-width:1180px;margin:80px auto 0;padding:0 48px;">
+    <div style="font-size:12px;letter-spacing:0.28em;text-transform:uppercase;opacity:0.6;margin-bottom:24px;">05 — Composer Detail · Web</div>
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;border-bottom:1px solid #161513;padding-bottom:20px;margin-bottom:36px;">
+      <div>
+        <div style="font-family:'Abril Fatface',serif;font-size:64px;line-height:1;">Florence Price</div>
+        <div style="font-family:'EB Garamond',serif;font-style:italic;font-size:17px;opacity:0.6;margin-top:8px;">1887–1953 · American</div>
+      </div>
+      <div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;opacity:0.5;">14 works catalogued</div>
+    </div>
+
+    <div style="font-size:12px;letter-spacing:0.24em;text-transform:uppercase;opacity:0.55;margin-bottom:6px;">Orchestral</div>
+    <div style="display:flex;align-items:center;gap:16px;padding:14px 0;border-bottom:1px solid rgba(22,21,19,0.12);">
+      <div style="width:0;height:0;border-top:6px solid transparent;border-bottom:6px solid transparent;border-left:10px solid {{ accent }};cursor:pointer;"></div>
+      <div style="flex:1;font-family:'EB Garamond',serif;font-size:20px;">Symphony No. 1 in E minor</div>
+      <div style="font-size:12px;letter-spacing:0.14em;text-transform:uppercase;opacity:0.5;">3 recordings</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:16px;padding:14px 0;border-bottom:1px solid rgba(22,21,19,0.12);">
+      <div style="width:0;height:0;border-top:6px solid transparent;border-bottom:6px solid transparent;border-left:10px solid {{ accent }};cursor:pointer;"></div>
+      <div style="flex:1;font-family:'EB Garamond',serif;font-size:20px;">Symphony No. 3 in C minor</div>
+      <div style="font-size:12px;letter-spacing:0.14em;text-transform:uppercase;opacity:0.5;">2 recordings</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:16px;padding:14px 0;border-bottom:1px solid rgba(22,21,19,0.12);margin-bottom:28px;">
+      <div style="width:0;height:0;border-top:6px solid transparent;border-bottom:6px solid transparent;border-left:10px solid {{ accent }};cursor:pointer;"></div>
+      <div style="flex:1;font-family:'EB Garamond',serif;font-size:20px;">Piano Concerto in One Movement</div>
+      <div style="font-size:12px;letter-spacing:0.14em;text-transform:uppercase;opacity:0.5;">1 recording</div>
+    </div>
+
+    <div style="font-size:12px;letter-spacing:0.24em;text-transform:uppercase;opacity:0.55;margin-bottom:6px;">Chamber</div>
+    <div style="display:flex;align-items:center;gap:16px;padding:14px 0;border-bottom:1px solid rgba(22,21,19,0.12);">
+      <div style="width:0;height:0;border-top:6px solid transparent;border-bottom:6px solid transparent;border-left:10px solid {{ accent }};cursor:pointer;"></div>
+      <div style="flex:1;font-family:'EB Garamond',serif;font-size:20px;">String Quartet No. 2 in A minor</div>
+      <div style="font-size:12px;letter-spacing:0.14em;text-transform:uppercase;opacity:0.5;">1 recording</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:16px;padding:14px 0;border-bottom:1px solid rgba(22,21,19,0.12);margin-bottom:28px;">
+      <div style="width:0;height:0;border-top:6px solid transparent;border-bottom:6px solid transparent;border-left:10px solid {{ accent }};cursor:pointer;"></div>
+      <div style="flex:1;font-family:'EB Garamond',serif;font-size:20px;">Piano Quintet in A minor</div>
+      <div style="font-size:12px;letter-spacing:0.14em;text-transform:uppercase;opacity:0.5;">2 recordings</div>
+    </div>
+
+    <div style="font-size:12px;letter-spacing:0.24em;text-transform:uppercase;opacity:0.55;margin-bottom:6px;">Piano</div>
+    <div style="display:flex;align-items:center;gap:16px;padding:14px 0;border-bottom:1px solid rgba(22,21,19,0.12);">
+      <div style="width:0;height:0;border-top:6px solid transparent;border-bottom:6px solid transparent;border-left:10px solid {{ accent }};cursor:pointer;"></div>
+      <div style="flex:1;font-family:'EB Garamond',serif;font-size:20px;">Fantasie Nègre No. 1 in E minor</div>
+      <div style="font-size:12px;letter-spacing:0.14em;text-transform:uppercase;opacity:0.5;">2 recordings</div>
+    </div>
+  </div>
+
+  <!-- SECTION 06 — WORK DETAIL (WEB) -->
+  <div style="max-width:1180px;margin:80px auto 0;padding:0 48px;">
+    <div style="font-size:12px;letter-spacing:0.28em;text-transform:uppercase;opacity:0.6;margin-bottom:24px;">06 — Work Detail · Web</div>
+    <div style="font-size:13px;letter-spacing:0.2em;text-transform:uppercase;opacity:0.6;margin-bottom:10px;cursor:pointer;">Florence Price</div>
+    <div style="font-family:'EB Garamond',serif;font-size:42px;font-weight:500;">Symphony No. 1 in E minor</div>
+    <div style="font-size:12px;letter-spacing:0.16em;text-transform:uppercase;opacity:0.5;margin-top:10px;padding-bottom:20px;border-bottom:1px solid #161513;">Orchestral · 4 movements · Composed 1932</div>
+
+    <div style="display:flex;justify-content:space-between;align-items:baseline;margin:28px 0 8px;">
+      <div style="font-size:12px;letter-spacing:0.24em;text-transform:uppercase;opacity:0.55;">3 Recordings in Library</div>
+      <div style="font-size:13px;letter-spacing:0.1em;text-transform:uppercase;color:{{ accent }};cursor:pointer;">Compare Recordings →</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:18px;padding:16px 0;border-bottom:1px solid rgba(22,21,19,0.12);">
+      <div style="width:0;height:0;border-top:6px solid transparent;border-bottom:6px solid transparent;border-left:10px solid {{ accent }};cursor:pointer;"></div>
+      <div style="flex:1;">
+        <div style="font-family:'EB Garamond',serif;font-size:19px;">Fort Smith Symphony · John Jeter</div>
+        <div style="font-size:12px;letter-spacing:0.14em;text-transform:uppercase;opacity:0.5;margin-top:4px;">Naxos · 2018</div>
+      </div>
+      <div style="font-size:13px;opacity:0.55;font-variant-numeric:tabular-nums;">35:28</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:18px;padding:16px 0;border-bottom:1px solid rgba(22,21,19,0.12);">
+      <div style="width:0;height:0;border-top:6px solid transparent;border-bottom:6px solid transparent;border-left:10px solid {{ accent }};cursor:pointer;"></div>
+      <div style="flex:1;">
+        <div style="font-family:'EB Garamond',serif;font-size:19px;">The Philadelphia Orchestra · Yannick Nézet-Séguin</div>
+        <div style="font-size:12px;letter-spacing:0.14em;text-transform:uppercase;opacity:0.5;margin-top:4px;">Deutsche Grammophon · 2021</div>
+      </div>
+      <div style="font-size:13px;opacity:0.55;font-variant-numeric:tabular-nums;">37:10</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:18px;padding:16px 0;border-bottom:1px solid rgba(22,21,19,0.12);margin-bottom:32px;">
+      <div style="width:0;height:0;border-top:6px solid transparent;border-bottom:6px solid transparent;border-left:10px solid {{ accent }};cursor:pointer;"></div>
+      <div style="flex:1;">
+        <div style="font-family:'EB Garamond',serif;font-size:19px;">New Black Music Repertory Ensemble · Leslie B. Dunner</div>
+        <div style="font-size:12px;letter-spacing:0.14em;text-transform:uppercase;opacity:0.5;margin-top:4px;">Cedille · 2001</div>
+      </div>
+      <div style="font-size:13px;opacity:0.55;font-variant-numeric:tabular-nums;">33:52</div>
+    </div>
+
+    <div style="font-size:12px;letter-spacing:0.24em;text-transform:uppercase;opacity:0.55;margin-bottom:6px;">Movements</div>
+    <div style="display:flex;align-items:baseline;gap:18px;padding:11px 0;border-bottom:1px solid rgba(22,21,19,0.12);">
+      <div style="font-family:'Abril Fatface',serif;font-size:19px;width:34px;">I</div>
+      <div style="flex:1;font-family:'EB Garamond',serif;font-size:18px;">Allegro ma non troppo</div>
+      <div style="font-size:14px;opacity:0.55;font-variant-numeric:tabular-nums;">12:04</div>
+    </div>
+    <div style="display:flex;align-items:baseline;gap:18px;padding:11px 0;border-bottom:1px solid rgba(22,21,19,0.12);">
+      <div style="font-family:'Abril Fatface',serif;font-size:19px;width:34px;">II</div>
+      <div style="flex:1;font-family:'EB Garamond',serif;font-size:18px;">Largo, maestoso</div>
+      <div style="font-size:14px;opacity:0.55;font-variant-numeric:tabular-nums;">10:47</div>
+    </div>
+    <div style="display:flex;align-items:baseline;gap:18px;padding:11px 0;border-bottom:1px solid rgba(22,21,19,0.12);">
+      <div style="font-family:'Abril Fatface',serif;font-size:19px;width:34px;">III</div>
+      <div style="flex:1;font-family:'EB Garamond',serif;font-size:18px;">Juba Dance: Allegro</div>
+      <div style="font-size:14px;opacity:0.55;font-variant-numeric:tabular-nums;">4:35</div>
+    </div>
+    <div style="display:flex;align-items:baseline;gap:18px;padding:11px 0;border-bottom:1px solid rgba(22,21,19,0.12);">
+      <div style="font-family:'Abril Fatface',serif;font-size:19px;width:34px;">IV</div>
+      <div style="flex:1;font-family:'EB Garamond',serif;font-size:18px;">Finale: Presto</div>
+      <div style="font-size:14px;opacity:0.55;font-variant-numeric:tabular-nums;">8:02</div>
+    </div>
+  </div>
+
+  <!-- SECTION 07 — COMPARE RECORDINGS (WEB) -->
+  <div style="max-width:1180px;margin:80px auto 0;padding:0 48px;">
+    <div style="font-size:12px;letter-spacing:0.28em;text-transform:uppercase;opacity:0.6;margin-bottom:24px;">07 — Compare Recordings · Web</div>
+    <div style="font-size:13px;letter-spacing:0.2em;text-transform:uppercase;opacity:0.6;margin-bottom:6px;">Florence Price</div>
+    <div style="font-family:'EB Garamond',serif;font-size:32px;margin-bottom:28px;">Comparing 3 recordings of Symphony No. 1 in E minor</div>
+
+    <div style="display:grid;grid-template-columns:220px repeat(3,1fr);">
+      <div style="padding:12px 16px 12px 0;border-bottom:1px solid #161513;"></div>
+      <div style="padding:12px 16px;border-bottom:1px solid #161513;">
+        <div style="font-family:'EB Garamond',serif;font-size:18px;">Fort Smith Symphony</div>
+        <div style="font-size:12px;opacity:0.6;margin-top:2px;">John Jeter</div>
+        <div style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;opacity:0.5;margin-top:4px;">Naxos · 2018</div>
+        <div style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;color:{{ accent }};margin-top:8px;">Default in Library</div>
+      </div>
+      <div style="padding:12px 16px;border-bottom:1px solid #161513;">
+        <div style="font-family:'EB Garamond',serif;font-size:18px;">The Philadelphia Orchestra</div>
+        <div style="font-size:12px;opacity:0.6;margin-top:2px;">Yannick Nézet-Séguin</div>
+        <div style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;opacity:0.5;margin-top:4px;">Deutsche Grammophon · 2021</div>
+      </div>
+      <div style="padding:12px 16px;border-bottom:1px solid #161513;">
+        <div style="font-family:'EB Garamond',serif;font-size:18px;">New Black Music Repertory Ens.</div>
+        <div style="font-size:12px;opacity:0.6;margin-top:2px;">Leslie B. Dunner</div>
+        <div style="font-size:11px;letter-spacing:0.12em;text-transform:uppercase;opacity:0.5;margin-top:4px;">Cedille · 2001</div>
+      </div>
+
+      <div style="padding:14px 16px 14px 0;border-bottom:1px solid rgba(22,21,19,0.12);font-family:'EB Garamond',serif;"><span style="font-family:'Abril Fatface',serif;font-size:16px;margin-right:10px;">I</span>Allegro ma non troppo</div>
+      <div style="padding:14px 16px;border-bottom:1px solid rgba(22,21,19,0.12);font-variant-numeric:tabular-nums;">12:04</div>
+      <div style="padding:14px 16px;border-bottom:1px solid rgba(22,21,19,0.12);font-variant-numeric:tabular-nums;">12:40</div>
+      <div style="padding:14px 16px;border-bottom:1px solid rgba(22,21,19,0.12);font-variant-numeric:tabular-nums;">11:30</div>
+
+      <div style="padding:14px 16px 14px 0;border-bottom:1px solid rgba(22,21,19,0.12);font-family:'EB Garamond',serif;"><span style="font-family:'Abril Fatface',serif;font-size:16px;margin-right:10px;">II</span>Largo, maestoso</div>
+      <div style="padding:14px 16px;border-bottom:1px solid rgba(22,21,19,0.12);font-variant-numeric:tabular-nums;">10:47</div>
+      <div style="padding:14px 16px;border-bottom:1px solid rgba(22,21,19,0.12);font-variant-numeric:tabular-nums;">11:20</div>
+      <div style="padding:14px 16px;border-bottom:1px solid rgba(22,21,19,0.12);font-variant-numeric:tabular-nums;">10:10</div>
+
+      <div style="padding:14px 16px 14px 0;border-bottom:1px solid rgba(22,21,19,0.12);font-family:'EB Garamond',serif;"><span style="font-family:'Abril Fatface',serif;font-size:16px;margin-right:10px;">III</span>Juba Dance: Allegro</div>
+      <div style="padding:14px 16px;border-bottom:1px solid rgba(22,21,19,0.12);font-variant-numeric:tabular-nums;">4:35</div>
+      <div style="padding:14px 16px;border-bottom:1px solid rgba(22,21,19,0.12);font-variant-numeric:tabular-nums;">4:50</div>
+      <div style="padding:14px 16px;border-bottom:1px solid rgba(22,21,19,0.12);font-variant-numeric:tabular-nums;">4:20</div>
+
+      <div style="padding:14px 16px 14px 0;border-bottom:1px solid rgba(22,21,19,0.12);font-family:'EB Garamond',serif;"><span style="font-family:'Abril Fatface',serif;font-size:16px;margin-right:10px;">IV</span>Finale: Presto</div>
+      <div style="padding:14px 16px;border-bottom:1px solid rgba(22,21,19,0.12);font-variant-numeric:tabular-nums;">8:02</div>
+      <div style="padding:14px 16px;border-bottom:1px solid rgba(22,21,19,0.12);font-variant-numeric:tabular-nums;">8:20</div>
+      <div style="padding:14px 16px;border-bottom:1px solid rgba(22,21,19,0.12);font-variant-numeric:tabular-nums;">7:52</div>
+
+      <div style="padding:14px 16px 14px 0;font-size:12px;letter-spacing:0.16em;text-transform:uppercase;opacity:0.6;">Total</div>
+      <div style="padding:14px 16px;font-variant-numeric:tabular-nums;font-weight:600;">35:28</div>
+      <div style="padding:14px 16px;font-variant-numeric:tabular-nums;font-weight:600;">37:10</div>
+      <div style="padding:14px 16px;font-variant-numeric:tabular-nums;font-weight:600;">33:52</div>
+    </div>
+  </div>
+
+  <!-- SECTION 08 — SEARCH RESULTS (WEB) -->
+  <div style="max-width:1180px;margin:80px auto 0;padding:0 48px;">
+    <div style="font-size:12px;letter-spacing:0.28em;text-transform:uppercase;opacity:0.6;margin-bottom:24px;">08 — Search Results · Web</div>
+    <div style="font-family:'EB Garamond',serif;font-size:28px;border-bottom:1px solid #161513;padding-bottom:16px;margin-bottom:32px;">florence price</div>
+
+    <div style="font-size:12px;letter-spacing:0.24em;text-transform:uppercase;opacity:0.55;margin-bottom:6px;">Composers</div>
+    <div style="display:flex;align-items:baseline;justify-content:space-between;padding:14px 0;border-bottom:1px solid rgba(22,21,19,0.12);margin-bottom:28px;">
+      <div><span style="font-family:'Abril Fatface',serif;font-size:24px;">Florence Price</span><span style="font-family:'EB Garamond',serif;font-style:italic;font-size:14px;opacity:0.55;margin-left:12px;">1887–1953</span></div>
+      <div style="font-size:12px;letter-spacing:0.14em;text-transform:uppercase;opacity:0.5;">14 works</div>
+    </div>
+
+    <div style="font-size:12px;letter-spacing:0.24em;text-transform:uppercase;opacity:0.55;margin-bottom:6px;">Works</div>
+    <div style="display:flex;align-items:baseline;justify-content:space-between;padding:14px 0;border-bottom:1px solid rgba(22,21,19,0.12);">
+      <div style="font-family:'EB Garamond',serif;font-size:19px;">Symphony No. 1 in E minor</div>
+      <div style="font-size:12px;letter-spacing:0.12em;text-transform:uppercase;opacity:0.5;">Florence Price</div>
+    </div>
+    <div style="display:flex;align-items:baseline;justify-content:space-between;padding:14px 0;border-bottom:1px solid rgba(22,21,19,0.12);margin-bottom:28px;">
+      <div style="font-family:'EB Garamond',serif;font-size:19px;">Fantasie Nègre No. 1 in E minor</div>
+      <div style="font-size:12px;letter-spacing:0.12em;text-transform:uppercase;opacity:0.5;">Florence Price</div>
+    </div>
+
+    <div style="font-size:12px;letter-spacing:0.24em;text-transform:uppercase;opacity:0.55;margin-bottom:6px;">Recordings</div>
+    <div style="display:flex;align-items:baseline;justify-content:space-between;padding:14px 0;border-bottom:1px solid rgba(22,21,19,0.12);">
+      <div><span style="font-family:'EB Garamond',serif;font-size:19px;">Fort Smith Symphony · John Jeter</span></div>
+      <div style="font-size:12px;letter-spacing:0.12em;text-transform:uppercase;opacity:0.5;">Symphony No. 1 · Naxos 2018</div>
+    </div>
+  </div>
+
+  <!-- SECTION 09 — COMPOSER BROWSE · NARROW (WEB, RESPONSIVE) -->
+  <div style="max-width:1180px;margin:80px auto 0;padding:0 48px;">
+    <div style="font-size:12px;letter-spacing:0.28em;text-transform:uppercase;opacity:0.6;margin-bottom:24px;">09 — Composer Browse · Narrow Window</div>
+    <div style="width:420px;border:1px solid rgba(22,21,19,0.2);padding:24px;">
+      <div style="border-top:1px solid #161513;padding-top:3px;"></div>
+      <div style="border-top:1px solid #161513;margin-bottom:16px;"></div>
+      <div style="padding:18px 0;border-bottom:1px solid rgba(22,21,19,0.12);">
+        <div style="font-family:'Abril Fatface',serif;font-size:26px;opacity:0.85;margin-bottom:10px;">B</div>
+        <div style="font-family:'Abril Fatface',serif;font-size:21px;">Johann Sebastian Bach</div>
+        <div style="display:flex;justify-content:space-between;margin-top:4px;">
+          <span style="font-family:'EB Garamond',serif;font-style:italic;font-size:14px;opacity:0.55;">1685–1750</span>
+          <span style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;opacity:0.5;">6 works</span>
+        </div>
+      </div>
+      <div style="padding:18px 0;border-bottom:1px solid rgba(22,21,19,0.12);">
+        <div style="font-family:'Abril Fatface',serif;font-size:26px;opacity:0.85;margin-bottom:10px;">P</div>
+        <div style="font-family:'Abril Fatface',serif;font-size:21px;">Florence Price</div>
+        <div style="display:flex;justify-content:space-between;margin-top:4px;">
+          <span style="font-family:'EB Garamond',serif;font-style:italic;font-size:14px;opacity:0.55;">1887–1953</span>
+          <span style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;opacity:0.5;">14 works</span>
+        </div>
+      </div>
+    </div>
+    <div style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;opacity:0.5;margin-top:12px;">Below ~600px: letter stacks above its group, name/dates/count stack vertically instead of sharing a row.</div>
+  </div>
+
+  <!-- SECTION 10 — iOS LIBRARY HOME -->
+  <div style="max-width:1180px;margin:80px auto 0;padding:0 48px;">
+    <div style="font-size:12px;letter-spacing:0.28em;text-transform:uppercase;opacity:0.6;margin-bottom:24px;">10 — Library Home · iOS</div>
+    <x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ false }}" hint-size="390px,844px">
+      <div style="background:#FAFAF7;color:#161513;height:100%;display:flex;flex-direction:column;padding:64px 24px 0;font-family:'EB Garamond',serif;">
+        <div style="font-family:'Abril Fatface',serif;font-size:30px;margin-bottom:14px;">Library</div>
+        <div style="display:flex;gap:22px;border-bottom:1px solid #161513;padding-bottom:10px;margin-bottom:8px;">
+          <div style="font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:{{ accent }};border-bottom:2px solid {{ accent }};padding-bottom:8px;">Composers</div>
+          <div style="font-size:12px;letter-spacing:0.14em;text-transform:uppercase;opacity:0.55;">Works</div>
+          <div style="font-size:12px;letter-spacing:0.14em;text-transform:uppercase;opacity:0.55;">Conductors</div>
+        </div>
+        <div style="flex:1;overflow:auto;">
+          <div style="padding:14px 0;border-bottom:1px solid rgba(22,21,19,0.12);"><div style="font-family:'Abril Fatface',serif;font-size:19px;">Johann Sebastian Bach</div><div style="font-family:'EB Garamond',serif;font-style:italic;font-size:13px;opacity:0.55;">1685–1750</div></div>
+          <div style="padding:14px 0;border-bottom:1px solid rgba(22,21,19,0.12);"><div style="font-family:'Abril Fatface',serif;font-size:19px;">Julius Eastman</div><div style="font-family:'EB Garamond',serif;font-style:italic;font-size:13px;opacity:0.55;">1940–1990</div></div>
+          <div style="padding:14px 0;border-bottom:1px solid rgba(22,21,19,0.12);"><div style="font-family:'Abril Fatface',serif;font-size:19px;">Fanny Mendelssohn</div><div style="font-family:'EB Garamond',serif;font-style:italic;font-size:13px;opacity:0.55;">1805–1847</div></div>
+          <div style="padding:14px 0;border-bottom:1px solid rgba(22,21,19,0.12);"><div style="font-family:'Abril Fatface',serif;font-size:19px;">Florence Price</div><div style="font-family:'EB Garamond',serif;font-style:italic;font-size:13px;opacity:0.55;">1887–1953</div></div>
+          <div style="padding:14px 0;border-bottom:1px solid rgba(22,21,19,0.12);"><div style="font-family:'Abril Fatface',serif;font-size:19px;">Clara Schumann</div><div style="font-family:'EB Garamond',serif;font-style:italic;font-size:13px;opacity:0.55;">1819–1896</div></div>
+          <div style="padding:14px 0;border-bottom:1px solid rgba(22,21,19,0.12);"><div style="font-family:'Abril Fatface',serif;font-size:19px;">William Grant Still</div><div style="font-family:'EB Garamond',serif;font-style:italic;font-size:13px;opacity:0.55;">1895–1978</div></div>
+          <div style="padding:14px 0;border-bottom:1px solid rgba(22,21,19,0.12);"><div style="font-family:'Abril Fatface',serif;font-size:19px;">Errollyn Wallen</div><div style="font-family:'EB Garamond',serif;font-style:italic;font-size:13px;opacity:0.55;">b. 1958</div></div>
+        </div>
+        <div style="border-top:1px solid rgba(22,21,19,0.2);padding:10px 4px;display:flex;align-items:center;gap:12px;">
+          <div style="position:relative;width:26px;height:26px;flex-shrink:0;">
+            <svg viewBox="0 0 40 40" width="26" height="26"><circle cx="20" cy="20" r="18" stroke="#161513" stroke-opacity="0.4" fill="none"></circle><circle cx="20" cy="20" r="3" fill="{{ accent }}"></circle></svg>
+          </div>
+          <div style="flex:1;overflow:hidden;">
+            <div style="font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Florence Price — II. Largo, maestoso</div>
+          </div>
+          <div style="width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:8px solid #161513;opacity:0.7;"></div>
+          <div style="display:flex;gap:3px;"><div style="width:3px;height:12px;background:#161513;"></div><div style="width:3px;height:12px;background:#161513;"></div></div>
+          <div style="width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-right:8px solid #161513;opacity:0.7;"></div>
+        </div>
+      </div>
+    </x-import>
+  </div>
+
+  <!-- SECTION 11 — iOS WORK DETAIL -->
+  <div style="max-width:1180px;margin:80px auto 0;padding:0 48px;">
+    <div style="font-size:12px;letter-spacing:0.28em;text-transform:uppercase;opacity:0.6;margin-bottom:24px;">11 — Work Detail · iOS</div>
+    <x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ false }}" hint-size="390px,844px">
+      <div style="background:#FAFAF7;color:#161513;height:100%;display:flex;flex-direction:column;padding:64px 24px 0;font-family:'EB Garamond',serif;">
+        <div style="font-size:12px;letter-spacing:0.18em;text-transform:uppercase;opacity:0.6;margin-bottom:8px;">Florence Price</div>
+        <div style="font-family:'EB Garamond',serif;font-size:25px;font-weight:500;">Symphony No. 1 in E minor</div>
+        <div style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;opacity:0.5;margin-top:8px;padding-bottom:14px;border-bottom:1px solid #161513;">Orchestral · 4 movements</div>
+        <div style="display:flex;justify-content:space-between;align-items:baseline;margin:16px 0 4px;">
+          <div style="font-size:11px;letter-spacing:0.18em;text-transform:uppercase;opacity:0.55;">3 Recordings</div>
+          <div style="font-size:12px;color:{{ accent }};">Compare →</div>
+        </div>
+        <div style="flex:1;overflow:auto;">
+          <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(22,21,19,0.12);min-height:44px;">
+            <div style="width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:9px solid {{ accent }};"></div>
+            <div style="flex:1;font-size:15px;">Fort Smith Symphony · Jeter</div>
+            <div style="font-size:11px;opacity:0.5;">2018</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid rgba(22,21,19,0.12);min-height:44px;">
+            <div style="width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:9px solid {{ accent }};"></div>
+            <div style="flex:1;font-size:15px;">Philadelphia Orch. · Nézet-Séguin</div>
+            <div style="font-size:11px;opacity:0.5;">2021</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:12px;padding:12px 0 16px;border-bottom:1px solid rgba(22,21,19,0.12);min-height:44px;">
+            <div style="width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:9px solid {{ accent }};"></div>
+            <div style="flex:1;font-size:15px;">NBM Repertory Ens. · Dunner</div>
+            <div style="font-size:11px;opacity:0.5;">2001</div>
+          </div>
+          <div style="font-size:11px;letter-spacing:0.18em;text-transform:uppercase;opacity:0.55;margin:14px 0 4px;">Movements</div>
+          <div style="display:flex;align-items:baseline;gap:12px;padding:9px 0;border-bottom:1px solid rgba(22,21,19,0.1);"><span style="font-family:'Abril Fatface',serif;font-size:15px;width:22px;">I</span><span style="flex:1;font-size:14px;">Allegro ma non troppo</span><span style="font-size:12px;opacity:0.5;">12:04</span></div>
+          <div style="display:flex;align-items:baseline;gap:12px;padding:9px 0;border-bottom:1px solid rgba(22,21,19,0.1);"><span style="font-family:'Abril Fatface',serif;font-size:15px;width:22px;">II</span><span style="flex:1;font-size:14px;">Largo, maestoso</span><span style="font-size:12px;opacity:0.5;">10:47</span></div>
+        </div>
+        <div style="border-top:1px solid rgba(22,21,19,0.2);padding:10px 4px;display:flex;align-items:center;gap:12px;">
+          <svg viewBox="0 0 40 40" width="26" height="26"><circle cx="20" cy="20" r="18" stroke="#161513" stroke-opacity="0.4" fill="none"></circle><circle cx="20" cy="20" r="3" fill="{{ accent }}"></circle></svg>
+          <div style="flex:1;font-size:13px;">Florence Price — II. Largo, maestoso</div>
+          <div style="width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:8px solid #161513;opacity:0.7;"></div>
+        </div>
+      </div>
+    </x-import>
+  </div>
+
+  <!-- SECTION 12 — iOS MINI PLAYER + LOCK SCREEN -->
+  <div style="max-width:1180px;margin:80px auto 0;padding:0 48px;">
+    <div style="font-size:12px;letter-spacing:0.28em;text-transform:uppercase;opacity:0.6;margin-bottom:24px;">12 — Mini Player &amp; Lock Screen · iOS</div>
+    <div style="display:flex;gap:56px;flex-wrap:wrap;">
+      <div>
+        <x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ false }}" hint-size="390px,844px">
+          <div style="background:#FAFAF7;color:#161513;height:100%;display:flex;flex-direction:column;padding:64px 24px 0;font-family:'EB Garamond',serif;">
+            <div style="font-family:'Abril Fatface',serif;font-size:26px;">Downloads</div>
+            <div style="flex:1;"></div>
+            <div style="border-top:1px solid rgba(22,21,19,0.2);padding:10px 4px;display:flex;align-items:center;gap:12px;position:relative;">
+              <div style="position:absolute;top:0;left:0;height:2px;width:38%;background:{{ accent }};"></div>
+              <svg viewBox="0 0 40 40" width="26" height="26"><circle cx="20" cy="20" r="18" stroke="#161513" stroke-opacity="0.4" fill="none"></circle><circle cx="20" cy="20" r="3" fill="{{ accent }}"></circle></svg>
+              <div style="flex:1;font-size:13px;">Florence Price — II. Largo, maestoso</div>
+              <div style="width:0;height:0;border-top:5px solid transparent;border-bottom:5px solid transparent;border-left:8px solid #161513;opacity:0.7;"></div>
+              <div style="display:flex;gap:3px;"><div style="width:3px;height:12px;background:#161513;"></div><div style="width:3px;height:12px;background:#161513;"></div></div>
+            </div>
+          </div>
+        </x-import>
+        <div style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;opacity:0.5;margin-top:12px;text-align:center;">Persistent mini-player bar</div>
+      </div>
+      <div>
+        <x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ true }}" hint-size="390px,844px">
+          <div style="background:#161513;color:#FAFAF7;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 32px;font-family:'EB Garamond',serif;">
+            <svg viewBox="0 0 200 200" width="180" height="180"><circle cx="100" cy="100" r="95" stroke="#FAFAF7" stroke-opacity="0.5" fill="none"></circle><circle cx="100" cy="100" r="58" stroke="#FAFAF7" stroke-opacity="0.5" fill="none"></circle><circle cx="100" cy="100" r="5" fill="{{ accent }}"></circle></svg>
+            <div style="font-family:'Abril Fatface',serif;font-size:26px;margin-top:20px;text-align:center;">Florence Price</div>
+            <div style="font-size:15px;margin-top:6px;text-align:center;">Symphony No. 1 in E minor</div>
+            <div style="font-style:italic;font-size:13px;opacity:0.7;margin-top:2px;">II. Largo, maestoso</div>
+            <div style="display:flex;align-items:center;gap:34px;margin-top:26px;">
+              <div style="width:0;height:0;border-top:7px solid transparent;border-bottom:7px solid transparent;border-right:12px solid #FAFAF7;padding:14px 6px;"></div>
+              <div style="width:56px;height:56px;border-radius:50%;background:{{ accent }};display:flex;align-items:center;justify-content:center;">
+                <div style="display:flex;gap:5px;"><div style="width:5px;height:17px;background:#FAFAF7;"></div><div style="width:5px;height:17px;background:#FAFAF7;"></div></div>
+              </div>
+              <div style="width:0;height:0;border-top:7px solid transparent;border-bottom:7px solid transparent;border-left:12px solid #FAFAF7;padding:14px 6px;"></div>
+            </div>
+          </div>
+        </x-import>
+        <div style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;opacity:0.5;margin-top:12px;text-align:center;">Lock screen / Control Centre</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECTION 13 — iOS SEARCH -->
+  <div style="max-width:1180px;margin:80px auto 0;padding:0 48px;">
+    <div style="font-size:12px;letter-spacing:0.28em;text-transform:uppercase;opacity:0.6;margin-bottom:24px;">13 — Search · iOS</div>
+    <x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ false }}" hint-size="390px,844px">
+      <div style="background:#FAFAF7;color:#161513;height:100%;display:flex;flex-direction:column;padding:64px 24px 0;font-family:'EB Garamond',serif;">
+        <div style="font-family:'EB Garamond',serif;font-size:20px;border-bottom:1px solid #161513;padding-bottom:12px;margin-bottom:16px;">price</div>
+        <div style="flex:1;overflow:auto;">
+          <div style="font-size:11px;letter-spacing:0.18em;text-transform:uppercase;opacity:0.55;margin-bottom:4px;">Composers</div>
+          <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(22,21,19,0.12);margin-bottom:14px;">
+            <span style="font-family:'Abril Fatface',serif;font-size:20px;">Florence Price</span>
+            <span style="font-size:11px;opacity:0.5;">14 works</span>
+          </div>
+          <div style="font-size:11px;letter-spacing:0.18em;text-transform:uppercase;opacity:0.55;margin-bottom:4px;">Works</div>
+          <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(22,21,19,0.12);"><span style="font-size:15px;">Symphony No. 1 in E minor</span></div>
+          <div style="display:flex;justify-content:space-between;padding:12px 0;border-bottom:1px solid rgba(22,21,19,0.12);"><span style="font-size:15px;">Fantasie Nègre No. 1</span></div>
+        </div>
+        <div style="border-top:1px solid rgba(22,21,19,0.2);padding:10px 4px;display:flex;align-items:center;gap:12px;">
+          <svg viewBox="0 0 40 40" width="26" height="26"><circle cx="20" cy="20" r="18" stroke="#161513" stroke-opacity="0.4" fill="none"></circle><circle cx="20" cy="20" r="3" fill="{{ accent }}"></circle></svg>
+          <div style="flex:1;font-size:13px;">Florence Price — II. Largo, maestoso</div>
+        </div>
+      </div>
+    </x-import>
+  </div>
+
+  <!-- SECTION 14 — iOS DOWNLOADS -->
+  <div style="max-width:1180px;margin:80px auto 0;padding:0 48px;">
+    <div style="font-size:12px;letter-spacing:0.28em;text-transform:uppercase;opacity:0.6;margin-bottom:24px;">14 — Downloads · iOS</div>
+    <x-import component-from-global-scope="IOSDevice" from="./ios-frame.jsx" dark="{{ false }}" hint-size="390px,844px">
+      <div style="background:#FAFAF7;color:#161513;height:100%;display:flex;flex-direction:column;padding:64px 24px 0;font-family:'EB Garamond',serif;">
+        <div style="font-family:'Abril Fatface',serif;font-size:26px;margin-bottom:10px;">Downloads</div>
+        <div style="font-size:11px;letter-spacing:0.14em;text-transform:uppercase;opacity:0.55;margin-bottom:6px;">3.2 GB of 12 GB used</div>
+        <div style="position:relative;height:1px;background:rgba(22,21,19,0.2);margin-bottom:20px;">
+          <div style="position:absolute;left:0;top:0;bottom:0;background:{{ accent }};width:27%;"></div>
+        </div>
+        <div style="flex:1;overflow:auto;">
+          <div style="padding:12px 0;border-bottom:1px solid rgba(22,21,19,0.12);">
+            <div style="display:flex;justify-content:space-between;"><span style="font-size:15px;">Symphony No. 1 in E minor</span><span style="font-size:11px;opacity:0.5;">184 MB</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px;">
+              <span style="font-size:11px;opacity:0.5;">Fort Smith Symphony · Jeter</span>
+              <span style="font-size:10px;letter-spacing:0.12em;text-transform:uppercase;border:1px solid rgba(22,21,19,0.3);padding:2px 6px;">Lossless</span>
+            </div>
+          </div>
+          <div style="padding:12px 0;border-bottom:1px solid rgba(22,21,19,0.12);">
+            <div style="display:flex;justify-content:space-between;"><span style="font-size:15px;">Fantasie Nègre No. 1</span><span style="font-size:11px;color:{{ accent }};">64%</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px;">
+              <span style="font-size:11px;opacity:0.5;">Downloading · High quality</span>
+            </div>
+            <div style="position:relative;height:1px;background:rgba(22,21,19,0.15);margin-top:6px;">
+              <div style="position:absolute;left:0;top:0;bottom:0;background:{{ accent }};width:64%;"></div>
+            </div>
+          </div>
+          <div style="padding:12px 0;border-bottom:1px solid rgba(22,21,19,0.12);">
+            <div style="display:flex;justify-content:space-between;"><span style="font-size:15px;">Symphony No. 4, Op. 98</span><span style="font-size:11px;opacity:0.5;">142 MB</span></div>
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:4px;">
+              <span style="font-size:11px;opacity:0.5;">Berlin Phil. · Karajan</span>
+              <span style="font-size:10px;letter-spacing:0.12em;text-transform:uppercase;border:1px solid rgba(22,21,19,0.3);padding:2px 6px;">High</span>
+            </div>
+          </div>
+        </div>
+        <div style="border-top:1px solid rgba(22,21,19,0.2);padding:10px 4px;display:flex;align-items:center;gap:12px;">
+          <svg viewBox="0 0 40 40" width="26" height="26"><circle cx="20" cy="20" r="18" stroke="#161513" stroke-opacity="0.4" fill="none"></circle><circle cx="20" cy="20" r="3" fill="{{ accent }}"></circle></svg>
+          <div style="flex:1;font-size:13px;">Florence Price — II. Largo, maestoso</div>
+        </div>
+      </div>
+    </x-import>
+  </div>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;accentColor&quot;:{&quot;editor&quot;:&quot;color&quot;,&quot;default&quot;:&quot;#B6401F&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;#B6401F&quot;,&quot;#1F6B63&quot;,&quot;#B98A1E&quot;,&quot;#33489E&quot;],&quot;section&quot;:&quot;Theme&quot;},&quot;panelTheme&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;default&quot;:&quot;dark&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;options&quot;:[&quot;dark&quot;,&quot;light&quot;],&quot;section&quot;:&quot;Theme&quot;}}">
+class Component extends DCLogic {
+  state = { currentMovement: 1 };
+
+  fmt(s) {
+    const m = Math.floor(s / 60);
+    const sec = String(s % 60).padStart(2, '0');
+    return m + ':' + sec;
+  }
+
+  renderVals() {
+    const raw = [
+      { roman: 'I', tempo: 'Allegro ma non troppo', duration: 724, durationLabel: '12:04' },
+      { roman: 'II', tempo: 'Largo, maestoso', duration: 647, durationLabel: '10:47' },
+      { roman: 'III', tempo: 'Juba Dance: Allegro', duration: 275, durationLabel: '4:35' },
+      { roman: 'IV', tempo: 'Finale: Presto', duration: 482, durationLabel: '8:02' },
+    ];
+    const idx = this.state.currentMovement;
+    const elapsed = 192;
+    const total = raw[idx].duration;
+    const progressPct = Math.round((elapsed / total) * 1000) / 10;
+    const accent = this.props.accentColor ?? '#B6401F';
+    const isLight = (this.props.panelTheme ?? 'dark') === 'light';
+    const panelBg = isLight ? '#FAFAF7' : '#161513';
+    const panelFg = isLight ? '#161513' : '#FAFAF7';
+    const alpha = (a) => (isLight ? `rgba(22,21,19,${a})` : `rgba(250,250,247,${a})`);
+    const panelFg15 = alpha(0.15);
+    const panelFg25 = alpha(0.25);
+    const panelFg30 = alpha(0.3);
+
+    const movements = raw.map((m, i) => ({
+      ...m,
+      romanColor: i === idx ? accent : '#FAFAF7',
+      textColor: i === idx ? accent : 'rgba(250,250,247,0.85)',
+      select: () => this.setState({ currentMovement: i }),
+    }));
+
+    return {
+      movements,
+      currentMovement: movements[idx],
+      elapsedLabel: this.fmt(elapsed),
+      remainingLabel: '-' + this.fmt(total - elapsed),
+      progressPct,
+      accent,
+      panelBg,
+      panelFg,
+      panelFg15,
+      panelFg25,
+      panelFg30,
+      panelIsDark: !isLight,
+      isRust: accent === '#B6401F',
+      isTeal: accent === '#1F6B63',
+      isMustard: accent === '#B98A1E',
+      isCobalt: accent === '#33489E',
+      sunburstAngles: Array.from({ length: 24 }, (_, i) => i * 15),
+    };
+  }
+}
+</script>
+</body>
+</html>

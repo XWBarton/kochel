@@ -1,0 +1,71 @@
+.wrap {
+  max-width: 1180px;
+  margin: 40px auto 0;
+  padding: 0 48px;
+}
+
+.queryInput {
+  width: 100%;
+  border: none;
+  border-bottom: 1px solid var(--ink);
+  background: transparent;
+  font-family: var(--font-body);
+  font-size: 28px;
+  padding-bottom: 16px;
+  margin-bottom: 32px;
+  outline: none;
+}
+
+.groupLabel {
+  font-size: 12px;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  opacity: 0.55;
+  margin-bottom: 6px;
+}
+
+.group {
+  margin-bottom: 28px;
+}
+
+.row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--divider);
+}
+
+.composerName {
+  font-family: var(--font-display);
+  font-size: 24px;
+}
+
+.dates {
+  font-family: var(--font-body);
+  font-style: italic;
+  font-size: 14px;
+  opacity: 0.55;
+  margin-left: 12px;
+}
+
+.title {
+  font-family: var(--font-body);
+  font-size: 19px;
+}
+
+.secondary {
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  opacity: 0.5;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.empty {
+  padding: 48px 0;
+  font-style: italic;
+  opacity: 0.55;
+}

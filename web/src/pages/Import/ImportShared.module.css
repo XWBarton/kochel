@@ -1,0 +1,205 @@
+.panel {
+  border: 1px solid var(--ink);
+  padding: 24px 28px;
+  margin-bottom: 32px;
+}
+
+.panelTitle {
+  font-family: var(--font-display);
+  font-size: 24px;
+  margin-bottom: 6px;
+}
+
+.panelIntro {
+  font-size: 14px;
+  opacity: 0.6;
+  margin-bottom: 20px;
+  max-width: 640px;
+}
+
+.sectionLabel {
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  opacity: 0.55;
+  margin-bottom: 10px;
+}
+
+.button {
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  border: 1px solid var(--ink);
+  padding: 8px 16px;
+  background: var(--paper);
+  cursor: pointer;
+}
+
+.button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.buttonPrimary {
+  composes: button;
+  background: var(--ink);
+  color: var(--paper);
+  border-color: var(--ink);
+}
+
+.buttonSmall {
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  border: 1px solid var(--ink);
+  padding: 4px 10px;
+  background: var(--paper);
+  cursor: pointer;
+}
+
+.buttonRow {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fieldLabel {
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.5;
+}
+
+.input {
+  font-family: var(--font-body);
+  font-size: 15px;
+  border: none;
+  border-bottom: 1px solid var(--divider);
+  background: transparent;
+  padding: 4px 2px 6px;
+  outline: none;
+}
+
+.input:focus {
+  border-bottom-color: var(--ink);
+}
+
+.fieldRow {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.status {
+  font-size: 13px;
+  margin-top: 10px;
+}
+
+.statusOk {
+  composes: status;
+  color: var(--accent);
+}
+
+.statusError {
+  composes: status;
+  color: #b3261e;
+}
+
+.progressTrack {
+  height: 4px;
+  background: var(--divider);
+  margin-top: 12px;
+}
+
+.progressFill {
+  height: 100%;
+  background: var(--accent);
+  transition: width 0.15s;
+}
+
+.hairlineDivider {
+  border-top: 1px solid var(--divider);
+  margin: 20px 0;
+}
+
+.searchBox {
+  position: relative;
+}
+
+.suggestions {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: var(--paper);
+  border: 1px solid var(--ink);
+  max-height: 260px;
+  overflow-y: auto;
+  z-index: 20;
+}
+
+.suggestion {
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  border-bottom: 1px solid var(--divider);
+}
+
+.suggestion:hover {
+  background: rgba(22, 21, 19, 0.05);
+}
+
+.suggestion:last-child {
+  border-bottom: none;
+}
+
+.suggestionTag {
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.5;
+  margin-left: 8px;
+}
+
+.picked {
+  background: rgba(182, 64, 31, 0.08);
+  border: 1px solid var(--accent);
+  padding: 10px 14px;
+  margin-bottom: 14px;
+  font-size: 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.repeatRow {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.repeatRow > * {
+  flex: 1;
+}
+
+.repeatRowRemove {
+  flex: none;
+  font-size: 16px;
+  line-height: 1;
+  padding: 4px 8px;
+}
+
+.checkboxRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}

@@ -1,0 +1,64 @@
+name: Kochel
+options:
+  bundleIdPrefix: com.kochel
+  deploymentTarget:
+    iOS: "17.0"
+  createIntermediateGroups: true
+
+configs:
+  Debug: debug
+  Release: release
+
+targets:
+  Kochel:
+    type: application
+    platform: iOS
+    sources:
+      - path: Kochel
+        excludes:
+          - "Info.plist"
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.kochel.app
+        SWIFT_VERSION: "6.0"
+        TARGETED_DEVICE_FAMILY: "1"
+        MARKETING_VERSION: "1.0"
+        CURRENT_PROJECT_VERSION: "1"
+        ENABLE_PREVIEWS: YES
+    info:
+      path: Kochel/Info.plist
+      properties:
+        CFBundleDisplayName: Köchel
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+        UIBackgroundModes:
+          - audio
+        UIAppFonts:
+          - AbrilFatface-Regular.ttf
+          - EBGaramond-Regular.ttf
+          - EBGaramond-Medium.ttf
+          - EBGaramond-SemiBold.ttf
+          - EBGaramond-Italic.ttf
+          - EBGaramond-MediumItalic.ttf
+        NSAppTransportSecurity:
+          # self-hosted server on a home network typically has no TLS cert;
+          # a production deployment behind a reverse-proxy with HTTPS
+          # wouldn't need this. Scoped to "arbitrary loads" rather than a
+          # narrower exception since the server's host/IP is user-configured
+          # at runtime (Settings), not knowable at build time.
+          NSAllowsArbitraryLoads: true
+
+  KochelUITests:
+    type: bundle.ui-testing
+    platform: iOS
+    sources:
+      - path: KochelUITests
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.kochel.uitests
+        SWIFT_VERSION: "6.0"
+        GENERATE_INFOPLIST_FILE: YES
+        TEST_TARGET_NAME: Kochel
+    dependencies:
+      - target: Kochel

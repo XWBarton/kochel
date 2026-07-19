@@ -1,0 +1,45 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-kochel}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+      POSTGRES_DB: ${POSTGRES_DB:-kochel}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-kochel}"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  app:
+    build: ./backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-kochel}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-kochel}
+      MUSIC_LIBRARY_ROOT: /music
+      CORS_ORIGINS: ${CORS_ORIGINS:-*}
+    ports:
+      - "${APP_PORT:-8000}:8000"
+    volumes:
+      # read-write: the import tool's upload feature writes into this
+      # directory (see backend/app/ingest/upload.py). Streaming and scanning
+      # never write; uploads are the one deliberate write path, and it's
+      # confined to MUSIC_LIBRARY_ROOT with path-traversal checks.
+      - ${MUSIC_LIBRARY_PATH:-./dev-library}:/music
+
+  web:
+    build: ./web
+    restart: unless-stopped
+    depends_on:
+      - app
+    ports:
+      - "${WEB_PORT:-3000}:80"
+
+volumes:
+  pgdata:

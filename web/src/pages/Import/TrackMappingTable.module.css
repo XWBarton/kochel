@@ -1,0 +1,37 @@
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.table th {
+  text-align: left;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.5;
+  font-weight: 400;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--ink);
+}
+
+.table td {
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--divider);
+  vertical-align: middle;
+}
+
+.numberInput {
+  width: 70px;
+}
+
+.movementInput {
+  width: 100px;
+}
+
+.hint {
+  font-size: 12px;
+  opacity: 0.55;
+  font-style: italic;
+  margin-bottom: 10px;
+}

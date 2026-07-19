@@ -1,0 +1,40 @@
+.list {
+  display: flex;
+  flex-direction: column;
+}
+
+.row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--divider);
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  background: none;
+}
+
+.row.active {
+  color: var(--accent);
+}
+
+.path {
+  font-family: var(--font-body);
+  font-size: 17px;
+}
+
+.meta {
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  opacity: 0.5;
+  white-space: nowrap;
+}
+
+.empty {
+  font-style: italic;
+  opacity: 0.55;
+  font-size: 14px;
+  padding: 8px 0;
+}

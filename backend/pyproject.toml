@@ -1,0 +1,12 @@
+[project]
+name = "kochel-backend"
+version = "0.1.0"
+description = "Köchel — classical music library backend"
+requires-python = ">=3.12"
+
+[tool.ruff]
+line-length = 100
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]

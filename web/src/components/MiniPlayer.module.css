@@ -1,0 +1,79 @@
+.bar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 64px;
+  background: var(--paper);
+  border-top: 1px solid var(--ink);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 24px;
+  z-index: 100;
+}
+
+.progressLine {
+  position: absolute;
+  top: -1px;
+  left: 0;
+  height: 1px;
+  background: var(--accent);
+}
+
+.sunburst {
+  flex-shrink: 0;
+}
+
+.info {
+  flex: 1;
+  min-width: 0;
+  cursor: pointer;
+  font-size: 14px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  flex-shrink: 0;
+}
+
+.triangle {
+  width: 0;
+  height: 0;
+  border-top: 5px solid transparent;
+  border-bottom: 5px solid transparent;
+  opacity: 0.75;
+  cursor: pointer;
+}
+
+.triangle.prev {
+  border-right: 8px solid var(--ink);
+}
+.triangle.next {
+  border-left: 8px solid var(--ink);
+}
+
+.pauseIcon {
+  display: flex;
+  gap: 3px;
+  cursor: pointer;
+}
+.pauseIcon span {
+  width: 3px;
+  height: 14px;
+  background: var(--ink);
+}
+
+.playTriangle {
+  width: 0;
+  height: 0;
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  border-left: 10px solid var(--ink);
+  cursor: pointer;
+}
