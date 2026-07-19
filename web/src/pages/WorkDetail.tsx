@@ -22,6 +22,7 @@ export function WorkDetail() {
   const [work, setWork] = useState<WorkDetailType | null>(null)
   const [recordings, setRecordings] = useState<RecordingListItem[] | null>(null)
   const [deleting, setDeleting] = useState(false)
+  const [expandedMovementId, setExpandedMovementId] = useState<number | null>(null)
   const { playRecording } = usePlayback()
 
   useEffect(() => {
@@ -56,6 +57,25 @@ export function WorkDetail() {
     `${work.movement_count} ${work.movement_count === 1 ? 'movement' : 'movements'}`,
     work.composed_year ? `Composed ${work.composed_year}${work.composed_year_uncertain ? '?' : ''}` : null,
   ].filter(Boolean)
+
+  function recordingsWithMovement(movementId: number): RecordingListItem[] {
+    return recordings!.filter((r) => findMovementTiming(r, movementId) !== null)
+  }
+
+  function playDefaultFromMovement(movementId: number) {
+    const eligible = recordingsWithMovement(movementId)
+    const target = eligible.find((r) => r.is_default_in_library) ?? eligible[0]
+    if (target) playRecording(work!, target, movementId)
+  }
+
+  function handleMovementTitleClick(movementId: number) {
+    const eligible = recordingsWithMovement(movementId)
+    if (eligible.length <= 1) {
+      playDefaultFromMovement(movementId)
+      return
+    }
+    setExpandedMovementId((prev) => (prev === movementId ? null : movementId))
+  }
 
   return (
     <div className={styles.wrap}>
@@ -104,13 +124,48 @@ export function WorkDetail() {
         <div className={styles.sectionLabel}>Movements</div>
         {movements.map((movement) => {
           const timing = referenceRecording ? findMovementTiming(referenceRecording, movement.id) : null
+          const eligible = recordingsWithMovement(movement.id)
+          const expanded = expandedMovementId === movement.id
           return (
-            <div className={styles.movementRow} key={movement.id}>
-              <div className={styles.roman}>{toRoman(movement.movement_number)}</div>
-              <div className={styles.tempo}>{movement.name ?? '—'}</div>
-              <div className={`${styles.duration} tabular`}>
-                {timing ? formatDuration(timing.duration) : '—'}
+            <div key={movement.id}>
+              <div className={styles.movementRow}>
+                <button
+                  className={styles.roman}
+                  onClick={() => playDefaultFromMovement(movement.id)}
+                  disabled={eligible.length === 0}
+                  aria-label={`Play movement ${movement.movement_number}`}
+                >
+                  {toRoman(movement.movement_number)}
+                </button>
+                <button
+                  className={styles.tempo}
+                  onClick={() => handleMovementTitleClick(movement.id)}
+                  disabled={eligible.length === 0}
+                >
+                  {movement.name ?? '—'}
+                  {eligible.length > 1 && <span className={styles.expandHint}>{expanded ? ' ▴' : ' ▾'}</span>}
+                </button>
+                <div className={`${styles.duration} tabular`}>
+                  {timing ? formatDuration(timing.duration) : '—'}
+                </div>
               </div>
+              {expanded && (
+                <div className={styles.movementRecordings}>
+                  {eligible.map((recording) => (
+                    <button
+                      key={recording.id}
+                      className={styles.movementRecordingRow}
+                      onClick={() => {
+                        playRecording(work, recording, movement.id)
+                        setExpandedMovementId(null)
+                      }}
+                    >
+                      {recordingCredit(recording)}
+                      {recording.is_default_in_library && <span className={styles.defaultTag}>default</span>}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           )
         })}

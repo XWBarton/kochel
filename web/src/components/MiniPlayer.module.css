@@ -19,6 +19,7 @@
   left: 0;
   height: 1px;
   background: var(--accent);
+  transition: width 0.26s linear;
 }
 
 .sunburst {

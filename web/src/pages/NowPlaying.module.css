@@ -2,7 +2,12 @@
   max-width: 1180px;
   margin: 40px auto 0;
   display: flex;
-  min-height: 700px;
+  /* fits within a roughly-16:9 viewport (minus header/margins) so the
+     transport stays visible without page scroll — the movements list
+     scrolls internally instead of pushing the panel taller */
+  height: calc(100vh - 160px);
+  min-height: 560px;
+  max-height: 820px;
   background: var(--panel-bg);
   color: var(--panel-fg);
 }
@@ -10,7 +15,9 @@
 @media (max-width: 900px) {
   .panel {
     flex-direction: column;
+    height: auto;
     min-height: 0;
+    max-height: none;
   }
 }
 
@@ -48,6 +55,7 @@
   padding: 56px 64px;
   display: flex;
   flex-direction: column;
+  min-height: 0;
 }
 
 @media (max-width: 900px) {
@@ -192,6 +200,7 @@
   top: 8px;
   height: 1px;
   background: var(--accent);
+  transition: width 0.26s linear;
 }
 
 .progressHandle {
@@ -202,6 +211,11 @@
   border-radius: 50%;
   background: var(--accent);
   margin-left: -4px;
+  transition: left 0.26s linear;
+}
+
+.noTransition {
+  transition: none;
 }
 
 .timeRow {

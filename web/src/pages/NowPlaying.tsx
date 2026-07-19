@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { PointerEvent as ReactPointerEvent } from 'react'
 import { Sunburst } from '../components/Sunburst'
 import { hexToRgba } from '../lib/color'
@@ -16,6 +16,17 @@ export function NowPlaying() {
     usePlayback()
   const { accentColor, panelTheme, setPanelTheme } = useSettings()
   const trackRef = useRef<HTMLDivElement>(null)
+  const [seeking, setSeeking] = useState(false)
+  const [justChangedMovement, setJustChangedMovement] = useState(false)
+  const prevMovementIdRef = useRef(currentMovementId)
+
+  useEffect(() => {
+    if (prevMovementIdRef.current === currentMovementId) return
+    prevMovementIdRef.current = currentMovementId
+    setJustChangedMovement(true)
+    const timeout = setTimeout(() => setJustChangedMovement(false), 700)
+    return () => clearTimeout(timeout)
+  }, [currentMovementId])
 
   if (!work || !recording || currentMovementId == null) {
     return <div className={styles.empty}>Nothing playing. Pick a recording from a work to begin.</div>
@@ -63,6 +74,13 @@ export function NowPlaying() {
           accent={accentColor}
           spinning={isPlaying}
           progress={durationSeconds > 0 ? elapsedSeconds / durationSeconds : 0}
+          needleTransition={
+            seeking
+              ? 'none'
+              : justChangedMovement
+                ? 'cx 0.65s cubic-bezier(0.22, 1, 0.36, 1), cy 0.65s cubic-bezier(0.22, 1, 0.36, 1)'
+                : 'cx 0.26s linear, cy 0.26s linear'
+          }
         />
         <button
           onClick={() => setPanelTheme(dark ? 'light' : 'dark')}
@@ -126,14 +144,23 @@ export function NowPlaying() {
             ref={trackRef}
             onPointerDown={(e) => {
               e.currentTarget.setPointerCapture(e.pointerId)
+              setSeeking(true)
               handleSeekPointer(e)
             }}
             onPointerMove={(e) => {
               if (e.buttons === 1) handleSeekPointer(e)
             }}
+            onPointerUp={() => setSeeking(false)}
+            onPointerCancel={() => setSeeking(false)}
           >
-            <div className={styles.progressFill} style={{ width: `${progressPct}%` }} />
-            <div className={styles.progressHandle} style={{ left: `${progressPct}%` }} />
+            <div
+              className={`${styles.progressFill} ${seeking ? styles.noTransition : ''}`}
+              style={{ width: `${progressPct}%` }}
+            />
+            <div
+              className={`${styles.progressHandle} ${seeking ? styles.noTransition : ''}`}
+              style={{ left: `${progressPct}%` }}
+            />
           </div>
           <div className={`${styles.timeRow} tabular`}>
             <span>{formatDuration(elapsedSeconds)}</span>
