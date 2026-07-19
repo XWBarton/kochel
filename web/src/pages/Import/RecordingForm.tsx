@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { searchEnsembles, searchPeople } from '../../api/importClient'
 import type { EnsembleSearchResult, PerformerRole, PersonSearchResult } from '../../api/importTypes'
+import { Disclosure } from './Disclosure'
 import { useDebouncedValue } from './useDebouncedValue'
 import type { ReviewPerformer, ReviewRecording } from './reviewTypes'
 import shared from './ImportShared.module.css'
@@ -18,55 +19,60 @@ export function RecordingForm({ value, onChange }: RecordingFormProps) {
           <span className={shared.fieldLabel}>Ensemble</span>
           <EnsembleField value={value} onChange={onChange} />
         </div>
-        <label className={shared.field}>
-          <span className={shared.fieldLabel}>Label</span>
-          <input
-            className={shared.input}
-            value={value.label}
-            onChange={(e) => onChange({ ...value, label: e.target.value })}
-          />
-        </label>
-        <label className={shared.field}>
-          <span className={shared.fieldLabel}>Recording year</span>
-          <input
-            className={shared.input}
-            type="number"
-            value={value.recordingYear ?? ''}
-            onChange={(e) => onChange({ ...value, recordingYear: e.target.value ? Number(e.target.value) : null })}
-          />
-        </label>
-        <label className={shared.field}>
-          <span className={shared.fieldLabel}>Release year</span>
-          <input
-            className={shared.input}
-            type="number"
-            value={value.releaseYear ?? ''}
-            onChange={(e) => onChange({ ...value, releaseYear: e.target.value ? Number(e.target.value) : null })}
-          />
-        </label>
       </div>
-
-      <label className={shared.checkboxRow} style={{ marginBottom: 14 }}>
-        <input
-          type="checkbox"
-          checked={value.isDefaultInLibrary}
-          onChange={(e) => onChange({ ...value, isDefaultInLibrary: e.target.checked })}
-        />
-        Default recording for this work
-      </label>
-
-      <label className={shared.field} style={{ marginBottom: 16 }}>
-        <span className={shared.fieldLabel}>Notes</span>
-        <textarea
-          className={shared.input}
-          rows={2}
-          value={value.notes}
-          onChange={(e) => onChange({ ...value, notes: e.target.value })}
-        />
-      </label>
 
       <span className={shared.fieldLabel}>Performers</span>
       <PerformersEditor value={value} onChange={onChange} />
+
+      <Disclosure label="Label, years, notes, default recording…">
+        <div className={shared.fieldRow}>
+          <label className={shared.field}>
+            <span className={shared.fieldLabel}>Label</span>
+            <input
+              className={shared.input}
+              value={value.label}
+              onChange={(e) => onChange({ ...value, label: e.target.value })}
+            />
+          </label>
+          <label className={shared.field}>
+            <span className={shared.fieldLabel}>Recording year</span>
+            <input
+              className={shared.input}
+              type="number"
+              value={value.recordingYear ?? ''}
+              onChange={(e) => onChange({ ...value, recordingYear: e.target.value ? Number(e.target.value) : null })}
+            />
+          </label>
+          <label className={shared.field}>
+            <span className={shared.fieldLabel}>Release year</span>
+            <input
+              className={shared.input}
+              type="number"
+              value={value.releaseYear ?? ''}
+              onChange={(e) => onChange({ ...value, releaseYear: e.target.value ? Number(e.target.value) : null })}
+            />
+          </label>
+        </div>
+
+        <label className={shared.checkboxRow} style={{ marginBottom: 14 }}>
+          <input
+            type="checkbox"
+            checked={value.isDefaultInLibrary}
+            onChange={(e) => onChange({ ...value, isDefaultInLibrary: e.target.checked })}
+          />
+          Default recording for this work
+        </label>
+
+        <label className={shared.field}>
+          <span className={shared.fieldLabel}>Notes</span>
+          <textarea
+            className={shared.input}
+            rows={2}
+            value={value.notes}
+            onChange={(e) => onChange({ ...value, notes: e.target.value })}
+          />
+        </label>
+      </Disclosure>
     </div>
   )
 }

@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { searchComposers } from '../../api/importClient'
 import type { ComposerSearchResult } from '../../api/importTypes'
+import { Disclosure } from './Disclosure'
 import { useDebouncedValue } from './useDebouncedValue'
 import { newManualComposer } from './reviewTypes'
 import type { ReviewComposer } from './reviewTypes'
@@ -77,52 +78,58 @@ export function ComposerPicker({ value, onChange, initialQuery }: ComposerPicker
           </button>
         </div>
         {!value.id && (
-          <div className={shared.fieldRow}>
-            <label className={shared.field}>
-              <span className={shared.fieldLabel}>Name</span>
-              <input
-                className={shared.input}
-                value={value.name}
-                onChange={(e) => onChange({ ...value, name: e.target.value })}
-              />
-            </label>
-            <label className={shared.field}>
-              <span className={shared.fieldLabel}>Sort name</span>
-              <input
-                className={shared.input}
-                placeholder="Last, First"
-                value={value.sortName}
-                onChange={(e) => onChange({ ...value, sortName: e.target.value })}
-              />
-            </label>
-            <label className={shared.field}>
-              <span className={shared.fieldLabel}>Birth year</span>
-              <input
-                className={shared.input}
-                type="number"
-                value={value.birthYear ?? ''}
-                onChange={(e) => onChange({ ...value, birthYear: e.target.value ? Number(e.target.value) : null })}
-              />
-            </label>
-            <label className={shared.field}>
-              <span className={shared.fieldLabel}>Death year</span>
-              <input
-                className={shared.input}
-                type="number"
-                value={value.deathYear ?? ''}
-                onChange={(e) => onChange({ ...value, deathYear: e.target.value ? Number(e.target.value) : null })}
-              />
-            </label>
-            <label className={shared.field}>
-              <span className={shared.fieldLabel}>Period</span>
-              <input
-                className={shared.input}
-                placeholder="baroque, romantic…"
-                value={value.period ?? ''}
-                onChange={(e) => onChange({ ...value, period: e.target.value })}
-              />
-            </label>
-          </div>
+          <>
+            <div className={shared.fieldRow}>
+              <label className={shared.field}>
+                <span className={shared.fieldLabel}>Name</span>
+                <input
+                  className={shared.input}
+                  value={value.name}
+                  onChange={(e) => onChange({ ...value, name: e.target.value })}
+                />
+              </label>
+            </div>
+            <Disclosure label="Sort name, birth/death year, period…">
+              <div className={shared.fieldRow}>
+                <label className={shared.field}>
+                  <span className={shared.fieldLabel}>Sort name</span>
+                  <input
+                    className={shared.input}
+                    placeholder="Last, First"
+                    value={value.sortName}
+                    onChange={(e) => onChange({ ...value, sortName: e.target.value })}
+                  />
+                </label>
+                <label className={shared.field}>
+                  <span className={shared.fieldLabel}>Birth year</span>
+                  <input
+                    className={shared.input}
+                    type="number"
+                    value={value.birthYear ?? ''}
+                    onChange={(e) => onChange({ ...value, birthYear: e.target.value ? Number(e.target.value) : null })}
+                  />
+                </label>
+                <label className={shared.field}>
+                  <span className={shared.fieldLabel}>Death year</span>
+                  <input
+                    className={shared.input}
+                    type="number"
+                    value={value.deathYear ?? ''}
+                    onChange={(e) => onChange({ ...value, deathYear: e.target.value ? Number(e.target.value) : null })}
+                  />
+                </label>
+                <label className={shared.field}>
+                  <span className={shared.fieldLabel}>Period</span>
+                  <input
+                    className={shared.input}
+                    placeholder="baroque, romantic…"
+                    value={value.period ?? ''}
+                    onChange={(e) => onChange({ ...value, period: e.target.value })}
+                  />
+                </label>
+              </div>
+            </Disclosure>
+          </>
         )}
       </div>
     )

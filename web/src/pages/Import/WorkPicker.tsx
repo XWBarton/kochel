@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { getWork } from '../../api/client'
 import { searchOpenOpusWorks, searchWorks } from '../../api/importClient'
 import type { ScanFileOut, WorkSearchResult } from '../../api/importTypes'
+import { Disclosure } from './Disclosure'
 import { useDebouncedValue } from './useDebouncedValue'
 import { guessMovementNames, newManualWork } from './reviewTypes'
 import type { ReviewComposer, ReviewWork } from './reviewTypes'
@@ -112,56 +113,61 @@ export function WorkPicker({ composer, value, onChange, initialQuery, files }: W
                   onChange={(e) => onChange({ ...value, title: e.target.value })}
                 />
               </label>
-              <label className={shared.field}>
-                <span className={shared.fieldLabel}>Subtitle</span>
-                <input
-                  className={shared.input}
-                  value={value.subtitle}
-                  onChange={(e) => onChange({ ...value, subtitle: e.target.value })}
-                />
-              </label>
-              <label className={shared.field}>
-                <span className={shared.fieldLabel}>Key</span>
-                <input
-                  className={shared.input}
-                  placeholder="G minor"
-                  value={value.key}
-                  onChange={(e) => onChange({ ...value, key: e.target.value })}
-                />
-              </label>
-              <label className={shared.field}>
-                <span className={shared.fieldLabel}>Form</span>
-                <input
-                  className={shared.input}
-                  placeholder="symphony, concerto…"
-                  value={value.form}
-                  onChange={(e) => onChange({ ...value, form: e.target.value })}
-                />
-              </label>
-              <label className={shared.field}>
-                <span className={shared.fieldLabel}>Category</span>
-                <input
-                  className={shared.input}
-                  placeholder="Orchestral, Chamber…"
-                  value={value.category}
-                  onChange={(e) => onChange({ ...value, category: e.target.value })}
-                />
-              </label>
-              <label className={shared.field}>
-                <span className={shared.fieldLabel}>Composed year</span>
-                <input
-                  className={shared.input}
-                  type="number"
-                  value={value.composedYear ?? ''}
-                  onChange={(e) =>
-                    onChange({ ...value, composedYear: e.target.value ? Number(e.target.value) : null })
-                  }
-                />
-              </label>
             </div>
 
-            <CatalogueNumbersEditor value={value} onChange={onChange} />
             <MovementsEditor value={value} onChange={onChange} />
+
+            <Disclosure label="Subtitle, key, catalogue number…">
+              <div className={shared.fieldRow}>
+                <label className={shared.field}>
+                  <span className={shared.fieldLabel}>Subtitle</span>
+                  <input
+                    className={shared.input}
+                    value={value.subtitle}
+                    onChange={(e) => onChange({ ...value, subtitle: e.target.value })}
+                  />
+                </label>
+                <label className={shared.field}>
+                  <span className={shared.fieldLabel}>Key</span>
+                  <input
+                    className={shared.input}
+                    placeholder="G minor"
+                    value={value.key}
+                    onChange={(e) => onChange({ ...value, key: e.target.value })}
+                  />
+                </label>
+                <label className={shared.field}>
+                  <span className={shared.fieldLabel}>Form</span>
+                  <input
+                    className={shared.input}
+                    placeholder="symphony, concerto…"
+                    value={value.form}
+                    onChange={(e) => onChange({ ...value, form: e.target.value })}
+                  />
+                </label>
+                <label className={shared.field}>
+                  <span className={shared.fieldLabel}>Category</span>
+                  <input
+                    className={shared.input}
+                    placeholder="Orchestral, Chamber…"
+                    value={value.category}
+                    onChange={(e) => onChange({ ...value, category: e.target.value })}
+                  />
+                </label>
+                <label className={shared.field}>
+                  <span className={shared.fieldLabel}>Composed year</span>
+                  <input
+                    className={shared.input}
+                    type="number"
+                    value={value.composedYear ?? ''}
+                    onChange={(e) =>
+                      onChange({ ...value, composedYear: e.target.value ? Number(e.target.value) : null })
+                    }
+                  />
+                </label>
+              </div>
+              <CatalogueNumbersEditor value={value} onChange={onChange} />
+            </Disclosure>
           </>
         )}
       </div>
