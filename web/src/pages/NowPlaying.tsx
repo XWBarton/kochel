@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import type { PointerEvent as ReactPointerEvent } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Sunburst } from '../components/Sunburst'
 import { hexToRgba } from '../lib/color'
 import { formatDuration, toRoman } from '../lib/format'
@@ -26,11 +27,18 @@ export function NowPlaying() {
     nextMovement,
     prevMovement,
     getElapsedSeconds,
-    stopPlayback,
   } = usePlayback()
   const { accentColor, panelTheme, setPanelTheme } = useSettings()
+  const navigate = useNavigate()
   const trackRef = useRef<HTMLDivElement>(null)
   const [seeking, setSeeking] = useState(false)
+
+  function handleMinimize() {
+    // collapses back to the mini-player without stopping playback — only
+    // the mini-player's own close button actually stops it
+    if (window.history.length > 1) navigate(-1)
+    else navigate('/')
+  }
 
   const [progress, setProgressDirectly] = useSmoothProgress({
     isPlaying,
@@ -103,8 +111,8 @@ export function NowPlaying() {
         <div>
           <div className={styles.topRow}>
             <div className={styles.label}>Now Playing</div>
-            <button onClick={stopPlayback} aria-label="Close player" className={styles.closeButton}>
-              close ×
+            <button onClick={handleMinimize} aria-label="Minimize player" className={styles.closeButton}>
+              minimize ▾
             </button>
           </div>
           <div className={styles.composerName}>{work.composer_name}</div>
