@@ -2,7 +2,6 @@
   max-width: 1180px;
   margin: 40px auto 0;
   display: flex;
-  flex-direction: column;
   /* fits within a roughly-16:9 viewport (minus header/margins) so the
      transport stays visible without page scroll — the movements list
      scrolls internally instead of pushing the panel taller */
@@ -15,41 +14,17 @@
 
 @media (max-width: 900px) {
   .panel {
+    flex-direction: column;
     height: auto;
     min-height: 0;
     max-height: none;
   }
 }
 
-.header {
-  flex-shrink: 0;
-  padding: 40px 64px 24px;
-  border-bottom: 1px solid color-mix(in srgb, var(--ink) 15%, transparent);
-}
-
-@media (max-width: 900px) {
-  .header {
-    padding: 32px 28px 20px;
-  }
-}
-
-.body {
-  flex: 1;
-  display: flex;
-  min-height: 0;
-}
-
-@media (max-width: 900px) {
-  .body {
-    flex-direction: column;
-  }
-}
-
 .artwork {
   width: 42%;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
   border-right: 1px solid color-mix(in srgb, var(--ink) 25%, transparent);
   position: relative;
   padding: 40px;
@@ -74,9 +49,21 @@
   pointer-events: none;
 }
 
+.artworkHeader {
+  flex-shrink: 0;
+}
+
+.spindleWrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+}
+
 .content {
   width: 58%;
-  padding: 28px 64px 40px;
+  padding: 40px 64px;
   display: flex;
   flex-direction: column;
   min-height: 0;
@@ -93,7 +80,7 @@
   display: flex;
   justify-content: space-between;
   align-items: baseline;
-  margin-bottom: 18px;
+  margin-bottom: 14px;
 }
 
 .label {
@@ -121,30 +108,30 @@
 
 .composerName {
   font-family: var(--font-display);
-  font-size: 56px;
-  line-height: 1;
+  font-size: 34px;
+  line-height: 1.05;
 }
 
 .workTitle {
   font-family: var(--font-body);
-  font-size: 24px;
-  margin-top: 14px;
+  font-size: 18px;
+  margin-top: 10px;
 }
 
 .currentMovement {
   font-family: var(--font-body);
   font-style: italic;
-  font-size: 17px;
+  font-size: 14px;
   opacity: 0.7;
   margin-top: 4px;
 }
 
 .credit {
-  font-size: 12px;
-  letter-spacing: 0.16em;
+  font-size: 11px;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   opacity: 0.55;
-  margin-top: 16px;
+  margin-top: 12px;
 }
 
 .movementsSection {
