@@ -1,7 +1,17 @@
 import { useEffect, useState } from 'react'
+import type { ChangeEvent } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { getComposer, getComposerWorks, getWork, getWorkRecordings, updateComposer } from '../api/client'
+import {
+  deleteComposerImage,
+  getComposer,
+  getComposerWorks,
+  getWork,
+  getWorkRecordings,
+  updateComposer,
+  uploadComposerImage,
+} from '../api/client'
 import type { ComposerListItem, WorkListItem } from '../api/types'
+import { ComposerAvatar } from '../components/ComposerAvatar'
 import { formatComposerDates } from '../lib/format'
 import { ComposerDetailsDisclosure, ComposerNameField } from './Import/ComposerFieldsForm'
 import type { ReviewComposer } from './Import/reviewTypes'
@@ -49,6 +59,8 @@ export function ComposerDetail() {
   const [editValue, setEditValue] = useState<ReviewComposer | null>(null)
   const [saving, setSaving] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [imageBusy, setImageBusy] = useState(false)
+  const [imageError, setImageError] = useState<string | null>(null)
   const { playRecording } = usePlayback()
 
   useEffect(() => {
@@ -94,20 +106,77 @@ export function ComposerDetail() {
     }
   }
 
+  async function handleImageChange(e: ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    e.target.value = ''
+    if (!file) return
+    setImageBusy(true)
+    setImageError(null)
+    try {
+      setComposer(await uploadComposerImage(id, file))
+    } catch (err) {
+      setImageError(err instanceof Error ? err.message : 'Upload failed')
+    } finally {
+      setImageBusy(false)
+    }
+  }
+
+  async function handleRemoveImage() {
+    setImageBusy(true)
+    setImageError(null)
+    try {
+      setComposer(await deleteComposerImage(id))
+    } catch (err) {
+      setImageError(err instanceof Error ? err.message : 'Remove failed')
+    } finally {
+      setImageBusy(false)
+    }
+  }
+
   const groups = groupByCategory(works)
 
   return (
     <div className={styles.wrap}>
       <div className={styles.header}>
-        <div>
-          <div className={styles.name}>{composer.name}</div>
-          {!editing && (
-            <div className={styles.meta}>
-              {[formatComposerDates(composer.birth_year, composer.death_year), composer.period]
-                .filter(Boolean)
-                .join(' · ')}
-            </div>
-          )}
+        <div className={styles.identity}>
+          <div className={styles.avatarWrap}>
+            <ComposerAvatar name={composer.name} sortName={composer.sort_name} imageUrl={composer.image_url} size="large" />
+            {editing && (
+              <div className={styles.avatarControls}>
+                <label className={styles.avatarUploadLink}>
+                  {imageBusy ? 'Working…' : composer.image_url ? 'Change photo' : 'Add photo'}
+                  <input
+                    className={styles.avatarFileInput}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    disabled={imageBusy}
+                    onChange={handleImageChange}
+                  />
+                </label>
+                {composer.image_url && (
+                  <button
+                    type="button"
+                    className={styles.avatarUploadLink}
+                    disabled={imageBusy}
+                    onClick={handleRemoveImage}
+                  >
+                    Remove
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
+          <div>
+            <div className={styles.name}>{composer.name}</div>
+            {imageError && <span className={shared.statusError}>{imageError}</span>}
+            {!editing && (
+              <div className={styles.meta}>
+                {[formatComposerDates(composer.birth_year, composer.death_year), composer.period]
+                  .filter(Boolean)
+                  .join(' · ')}
+              </div>
+            )}
+          </div>
         </div>
         <div className={styles.headerRight}>
           <div className={styles.catalogued}>

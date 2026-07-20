@@ -8,6 +8,7 @@ class Settings(BaseSettings):
 
     database_url: str = "postgresql+asyncpg://kochel:kochel@localhost:5432/kochel"
     music_library_root: Path = Path("./dev-library")
+    composer_images_root: Path = Path("./dev-composer-images")
     cors_origins: str = "*"
 
     @property

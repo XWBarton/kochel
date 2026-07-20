@@ -18,21 +18,35 @@ async function get<T>(path: string): Promise<T> {
   return resp.json() as Promise<T>
 }
 
+async function throwForStatus(resp: Response): Promise<never> {
+  let detail = resp.statusText
+  try {
+    detail = (await resp.json()).detail || detail
+  } catch {
+    // non-JSON error body
+  }
+  throw new Error(detail)
+}
+
 async function put<T>(path: string, payload: unknown): Promise<T> {
   const resp = await fetch(`${API_ROOT}${path}`, {
     method: 'PUT',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
   })
-  if (!resp.ok) {
-    let detail = resp.statusText
-    try {
-      detail = (await resp.json()).detail || detail
-    } catch {
-      // non-JSON error body
-    }
-    throw new Error(detail)
-  }
+  if (!resp.ok) return throwForStatus(resp)
+  return resp.json() as Promise<T>
+}
+
+async function putForm<T>(path: string, body: FormData): Promise<T> {
+  const resp = await fetch(`${API_ROOT}${path}`, { method: 'PUT', body })
+  if (!resp.ok) return throwForStatus(resp)
+  return resp.json() as Promise<T>
+}
+
+async function del<T>(path: string): Promise<T> {
+  const resp = await fetch(`${API_ROOT}${path}`, { method: 'DELETE' })
+  if (!resp.ok) return throwForStatus(resp)
   return resp.json() as Promise<T>
 }
 
@@ -111,6 +125,16 @@ export interface ComposerUpdatePayload {
 
 export function updateComposer(composerId: number, payload: ComposerUpdatePayload): Promise<ComposerListItem> {
   return put(`/composers/${composerId}`, payload)
+}
+
+export function uploadComposerImage(composerId: number, file: File): Promise<ComposerListItem> {
+  const formData = new FormData()
+  formData.append('file', file)
+  return putForm(`/composers/${composerId}/image`, formData)
+}
+
+export function deleteComposerImage(composerId: number): Promise<ComposerListItem> {
+  return del(`/composers/${composerId}/image`)
 }
 
 export function search(query: string): Promise<SearchResponse> {

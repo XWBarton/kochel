@@ -32,9 +32,15 @@
 
 .row {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   gap: 24px;
+}
+
+.rowMain {
+  display: flex;
+  align-items: center;
+  gap: 14px;
 }
 
 .name {

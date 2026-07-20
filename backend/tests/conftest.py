@@ -82,3 +82,11 @@ async def music_root(tmp_path, db_session):
     settings.music_library_root = tmp_path
     yield tmp_path
     settings.music_library_root = original
+
+
+@pytest_asyncio.fixture
+async def composer_images_root(tmp_path, db_session):
+    original = settings.composer_images_root
+    settings.composer_images_root = tmp_path / "composer-images"
+    yield settings.composer_images_root
+    settings.composer_images_root = original

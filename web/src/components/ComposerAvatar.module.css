@@ -1,0 +1,35 @@
+.avatar {
+  flex-shrink: 0;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1px solid var(--divider);
+  background: var(--paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.letter {
+  font-family: var(--font-display);
+  opacity: 0.85;
+  line-height: 1;
+}
+
+.small {
+  width: 44px;
+  height: 44px;
+}
+
+.small .letter {
+  font-size: 18px;
+}
+
+.large {
+  width: 96px;
+  height: 96px;
+  border-width: 1px;
+}
+
+.large .letter {
+  font-size: 38px;
+}

@@ -23,6 +23,7 @@ services:
     environment:
       DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-kochel}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-kochel}
       MUSIC_LIBRARY_ROOT: /music
+      COMPOSER_IMAGES_ROOT: /composer-images
       CORS_ORIGINS: ${CORS_ORIGINS:-*}
     ports:
       - "${APP_PORT:-8000}:8000"
@@ -32,6 +33,8 @@ services:
       # never write; uploads are the one deliberate write path, and it's
       # confined to MUSIC_LIBRARY_ROOT with path-traversal checks.
       - ${MUSIC_LIBRARY_PATH:-./dev-library}:/music
+      # composer profile pictures, uploaded via the composer edit UI
+      - ${COMPOSER_IMAGES_PATH:-./dev-composer-images}:/composer-images
 
   web:
     build: ./web

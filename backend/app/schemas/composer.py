@@ -11,6 +11,7 @@ class ComposerListItem(BaseModel):
     death_year: int | None
     period: str | None
     work_count: int
+    image_url: str | None = None
 
 
 class ComposerListResponse(BaseModel):

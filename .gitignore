@@ -5,6 +5,7 @@ backend/**/__pycache__/
 backend/.pytest_cache/
 backend/.ruff_cache/
 dev-library/
+dev-composer-images/
 .DS_Store
 web/node_modules/
 web/dist/

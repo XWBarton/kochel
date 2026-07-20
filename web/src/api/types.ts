@@ -6,6 +6,7 @@ export interface ComposerListItem {
   death_year: number | null
   period: string | null
   work_count: number
+  image_url: string | null
 }
 
 export interface ComposerListResponse {

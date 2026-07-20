@@ -14,5 +14,6 @@ class Composer(Base, TimestampMixin):
     birth_year: Mapped[int | None] = mapped_column(SmallInteger)
     death_year: Mapped[int | None] = mapped_column(SmallInteger)
     period: Mapped[str | None] = mapped_column(String(30))
+    image_filename: Mapped[str | None] = mapped_column(String(255))
 
     works: Mapped[list["Work"]] = relationship(back_populates="composer", cascade="all, delete-orphan")

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { getComposers } from '../api/client'
 import type { ComposerListItem } from '../api/types'
+import { ComposerAvatar } from '../components/ComposerAvatar'
 import { firstLetter, formatComposerDates } from '../lib/format'
 import styles from './ComposerBrowse.module.css'
 
@@ -54,9 +55,12 @@ export function ComposerBrowse() {
             <div className={styles.rows}>
               {group.composers.map((c) => (
                 <Link className={styles.row} to={`/composers/${c.id}`} key={c.id}>
-                  <div>
-                    <span className={styles.name}>{c.name}</span>
-                    <span className={styles.dates}>{formatComposerDates(c.birth_year, c.death_year)}</span>
+                  <div className={styles.rowMain}>
+                    <ComposerAvatar name={c.name} sortName={c.sort_name} imageUrl={c.image_url} size="small" />
+                    <div>
+                      <span className={styles.name}>{c.name}</span>
+                      <span className={styles.dates}>{formatComposerDates(c.birth_year, c.death_year)}</span>
+                    </div>
                   </div>
                   <div className={styles.workCount}>
                     {c.work_count} {c.work_count === 1 ? 'work' : 'works'}
