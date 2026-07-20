@@ -3,7 +3,7 @@ import { searchComposers } from '../../api/importClient'
 import type { ComposerSearchResult } from '../../api/importTypes'
 import { ComposerDetailsDisclosure, ComposerNameField } from './ComposerFieldsForm'
 import { useDebouncedValue } from './useDebouncedValue'
-import { newManualComposer } from './reviewTypes'
+import { namesLikelyMatch, newManualComposer } from './reviewTypes'
 import type { ReviewComposer } from './reviewTypes'
 import shared from './ImportShared.module.css'
 
@@ -56,7 +56,7 @@ export function ComposerPicker({ value, onChange, initialQuery }: ComposerPicker
     let cancelled = false
     searchComposers(guess).then((r) => {
       if (cancelled || valueRef.current) return
-      const exact = r.find((x) => x.name.trim().toLowerCase() === guess.toLowerCase())
+      const exact = r.find((x) => namesLikelyMatch(guess, x.name))
       onChange(exact ? fromSearchResult(exact) : newManualComposer(guess))
     })
     return () => {

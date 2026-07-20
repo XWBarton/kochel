@@ -24,12 +24,14 @@ export function TrackMappingTable({ work, tracks, onChange }: TrackMappingTableP
     onChange(tracks.filter((_, idx) => idx !== i))
   }
 
-  const movementNumbers = work.movements.map((m) => m.movementNumber).join(', ')
+  const movementList = work.movements
+    .map((m) => `${m.movementNumber}. ${m.name ?? '(untitled)'}`)
+    .join(' · ')
 
   return (
     <div>
       <div className={styles.hint}>
-        This work has movement(s): {movementNumbers || '(none yet — add movements above)'}. Enter which
+        This work has movement(s): {movementList || '(none yet — add movements above)'}. Enter which
         movement number(s) each file covers — most files cover exactly one.
       </div>
       <div className={styles.hint}>
@@ -41,6 +43,8 @@ export function TrackMappingTable({ work, tracks, onChange }: TrackMappingTableP
         <thead>
           <tr>
             <th>File</th>
+            <th>Title tag</th>
+            <th>Composer tag</th>
             <th>Track #</th>
             <th>Disc #</th>
             <th>Movement #(s)</th>
@@ -51,6 +55,8 @@ export function TrackMappingTable({ work, tracks, onChange }: TrackMappingTableP
           {tracks.map((t, i) => (
             <tr key={t.file.relative_path}>
               <td>{t.file.filename}</td>
+              <td>{t.file.tags.title ?? ''}</td>
+              <td>{t.file.tags.composer ?? ''}</td>
               <td>
                 <input
                   className={`${shared.input} ${styles.numberInput}`}

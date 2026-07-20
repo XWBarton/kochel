@@ -54,17 +54,67 @@ def _first_tag(easy_file, key: str) -> str | None:
     return values[0] if values else None
 
 
-def _extract_tags(easy_file) -> dict[str, str | None]:
+def _first_raw(raw_tags, *keys: str) -> str | None:
+    """Reads a raw (non-"easy") tag by exact key — for tags EasyID3/EasyMP4
+    don't expose, like ID3's MVNM/MVIN movement frames or MP4's ©mvn/©mvi
+    atoms. ID3 frame objects carry their value(s) on `.text`; MP4 atoms are
+    already plain lists, hence the getattr fallback covering both."""
+    if raw_tags is None:
+        return None
+    for key in keys:
+        try:
+            if key not in raw_tags:
+                continue
+            values = raw_tags[key]
+        except Exception:
+            continue
+        values = getattr(values, "text", values)
+        if values:
+            return str(values[0])
+    return None
+
+
+def _load_raw_tags(abs_path: Path):
+    try:
+        raw_file = mutagen.File(abs_path)
+    except Exception:
+        return None
+    return getattr(raw_file, "tags", None)
+
+
+def _extract_tags(abs_path: Path, easy_file) -> dict[str, str | None]:
+    # FLAC/Vorbis comments are freeform, so movement name/number are already
+    # reachable through the same easy-tag lookup as everything else there —
+    # "movement" itself is the *number* per MusicBrainz Picard's mapping,
+    # not the name; "movementname" is the name.
+    # ID3 (MVNM/MVIN) and MP4 (©mvn/©mvi) aren't in the easy-tag registry, so
+    # only fall back to a second, raw parse of the file when needed.
+    movement_name = _first_tag(easy_file, "movementname")
+    movement_number = _first_tag(easy_file, "movementnumber") or _first_tag(easy_file, "movement")
+    if not (movement_name and movement_number):
+        raw_tags = _load_raw_tags(abs_path)
+        movement_name = movement_name or _first_raw(raw_tags, "MVNM", "\xa9mvn")
+        movement_number = movement_number or _first_raw(raw_tags, "MVIN", "\xa9mvi")
+
     return {
         "title": _first_tag(easy_file, "title"),
         "composer": _first_tag(easy_file, "composer"),
+        "composersort": _first_tag(easy_file, "composersort"),
         "artist": _first_tag(easy_file, "artist"),
         "albumartist": _first_tag(easy_file, "albumartist"),
         "album": _first_tag(easy_file, "album"),
         "date": _first_tag(easy_file, "date"),
+        "originaldate": _first_tag(easy_file, "originaldate"),
         "tracknumber": _first_tag(easy_file, "tracknumber"),
         "discnumber": _first_tag(easy_file, "discnumber"),
+        "discsubtitle": _first_tag(easy_file, "discsubtitle"),
         "genre": _first_tag(easy_file, "genre"),
+        "conductor": _first_tag(easy_file, "conductor"),
+        "performer": _first_tag(easy_file, "performer"),
+        "catalognumber": _first_tag(easy_file, "catalognumber"),
+        "organization": _first_tag(easy_file, "organization"),
+        "movementname": movement_name,
+        "movementnumber": movement_number,
     }
 
 
@@ -100,7 +150,7 @@ def scan_file(abs_path: Path, relative_path: str) -> ScannedFile | None:
         sample_rate_hz=getattr(info, "sample_rate", None),
         channels=getattr(info, "channels", None),
         file_size_bytes=abs_path.stat().st_size,
-        tags=_extract_tags(easy_file),
+        tags=_extract_tags(abs_path, easy_file),
     )
 
 

@@ -4,9 +4,10 @@ import type { ImportCommitRequest, ScanGroupOut } from '../../api/importTypes'
 import { ComposerPicker } from './ComposerPicker'
 import { RecordingForm } from './RecordingForm'
 import {
-  emptyRecording,
   guessComposerName,
+  guessRecording,
   guessWorkTitle,
+  parseLeadingInt,
   tracksFromFiles,
 } from './reviewTypes'
 import type { ReviewComposer, ReviewRecording, ReviewTrack, ReviewWork } from './reviewTypes'
@@ -23,7 +24,7 @@ interface ReviewPanelProps {
 export function ReviewPanel({ group, onCommitted, onCancel }: ReviewPanelProps) {
   const [composer, setComposer] = useState<ReviewComposer | null>(null)
   const [work, setWork] = useState<ReviewWork | null>(null)
-  const [recording, setRecording] = useState<ReviewRecording>(emptyRecording())
+  const [recording, setRecording] = useState<ReviewRecording>(() => guessRecording(group.files))
   const [tracks, setTracks] = useState<ReviewTrack[]>(() => tracksFromFiles(group.files))
   const [committing, setCommitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -31,19 +32,30 @@ export function ReviewPanel({ group, onCommitted, onCancel }: ReviewPanelProps) 
   useEffect(() => {
     setComposer(null)
     setWork(null)
-    setRecording(emptyRecording())
+    setRecording(guessRecording(group.files))
     setTracks(tracksFromFiles(group.files))
     setError(null)
   }, [group])
 
-  // When the work has exactly as many movements as there are files, the
-  // mapping is unambiguous — same track-number order used to guess the
-  // movement names in the first place — so fill it in rather than making
-  // every track's movement number(s) be retyped by hand (painful and easy
-  // to miss one on a large anthology work with hundreds of tracks).
+  // Fill in the track → movement mapping automatically rather than making
+  // every file's movement number(s) be retyped by hand (painful and easy to
+  // miss one on a large anthology work with hundreds of tracks). Prefer an
+  // explicit per-file movement-number tag (MVIN / Picard's "movement") when
+  // every file has one and it's in range — that's a direct statement of
+  // intent, more reliable than inferring order. Otherwise fall back to the
+  // same-count heuristic: when the work has exactly as many movements as
+  // there are files, file order (by track number) is an unambiguous mapping.
   useEffect(() => {
-    if (!work || work.movements.length !== tracks.length) return
+    if (!work) return
     if (!tracks.every((t) => t.movementNumbers.length === 0)) return
+
+    const explicit = tracks.map((t) => parseLeadingInt(t.file.tags.movementnumber))
+    if (explicit.length > 0 && explicit.every((n) => n != null && n >= 1 && n <= work.movements.length)) {
+      setTracks(tracks.map((t, i) => ({ ...t, movementNumbers: [explicit[i] as number] })))
+      return
+    }
+
+    if (work.movements.length !== tracks.length) return
 
     const ordered = [...tracks].sort((a, b) => {
       if (a.trackNumber != null && b.trackNumber != null) return a.trackNumber - b.trackNumber
@@ -137,8 +149,6 @@ export function ReviewPanel({ group, onCommitted, onCancel }: ReviewPanelProps) 
         </button>
       </div>
 
-      <FileTable files={group.files} />
-
       <div className={shared.hairlineDivider} />
       <div className={shared.sectionLabel}>Composer</div>
       <ComposerPicker value={composer} onChange={updateWork} initialQuery={guessComposerName(group.files)} />
@@ -178,45 +188,3 @@ export function ReviewPanel({ group, onCommitted, onCancel }: ReviewPanelProps) 
     </div>
   )
 }
-
-function FileTable({ files }: { files: ScanGroupOut['files'] }) {
-  return (
-    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, marginTop: 16 }}>
-      <thead>
-        <tr>
-          {['File', 'Title tag', 'Composer tag', 'Album tag', 'Duration', 'Format'].map((h) => (
-            <th
-              key={h}
-              style={{
-                textAlign: 'left',
-                fontSize: 11,
-                letterSpacing: '0.08em',
-                textTransform: 'uppercase',
-                opacity: 0.5,
-                fontWeight: 400,
-                padding: '6px 8px',
-                borderBottom: '1px solid var(--ink)',
-              }}
-            >
-              {h}
-            </th>
-          ))}
-        </tr>
-      </thead>
-      <tbody>
-        {files.map((f) => (
-          <tr key={f.relative_path}>
-            <td style={cellStyle}>{f.filename}</td>
-            <td style={cellStyle}>{f.tags.title ?? ''}</td>
-            <td style={cellStyle}>{f.tags.composer ?? ''}</td>
-            <td style={cellStyle}>{f.tags.album ?? ''}</td>
-            <td style={cellStyle}>{f.duration_seconds.toFixed(1)}s</td>
-            <td style={cellStyle}>{f.format}</td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  )
-}
-
-const cellStyle = { padding: '6px 8px', borderBottom: '1px solid var(--divider)' }

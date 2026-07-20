@@ -3,7 +3,7 @@ import { getWork } from '../../api/client'
 import { searchOpenOpusWorks, searchWorks } from '../../api/importClient'
 import type { ScanFileOut, WorkSearchResult } from '../../api/importTypes'
 import { useDebouncedValue } from './useDebouncedValue'
-import { guessMovementNames, newManualWork } from './reviewTypes'
+import { guessCatalogueNumbers, guessMovementNames, newManualWork, titlesLikelyMatch } from './reviewTypes'
 import type { ReviewComposer, ReviewWork } from './reviewTypes'
 import { WorkDetailsDisclosure, WorkTitleField } from './WorkFieldsForm'
 import shared from './ImportShared.module.css'
@@ -71,13 +71,17 @@ export function WorkPicker({ composer, value, onChange, initialQuery, files }: W
     let cancelled = false
     searchForComposer(guess).then((r) => {
       if (cancelled || valueRef.current) return
-      const exact = r.find((x) => x.title.trim().toLowerCase() === guess.toLowerCase())
+      const exact = r.find((x) => titlesLikelyMatch(guess, x.title))
       if (exact && exact.source === 'library' && exact.id != null) {
         pickExisting(exact.id)
       } else if (exact) {
-        onChange({ ...newManualWork(exact.title, guessMovementNames(files)), category: exact.category ?? '' })
+        onChange({
+          ...newManualWork(exact.title, guessMovementNames(files)),
+          category: exact.category ?? '',
+          catalogueNumbers: guessCatalogueNumbers(files),
+        })
       } else {
-        onChange(newManualWork(guess, guessMovementNames(files)))
+        onChange({ ...newManualWork(guess, guessMovementNames(files)), catalogueNumbers: guessCatalogueNumbers(files) })
       }
     })
     return () => {
@@ -135,7 +139,7 @@ export function WorkPicker({ composer, value, onChange, initialQuery, files }: W
                     pickExisting(r.id)
                   } else {
                     const work = newManualWork(r.title, guessMovementNames(files))
-                    onChange({ ...work, category: r.category ?? '' })
+                    onChange({ ...work, category: r.category ?? '', catalogueNumbers: guessCatalogueNumbers(files) })
                   }
                 }}
               >
@@ -150,7 +154,12 @@ export function WorkPicker({ composer, value, onChange, initialQuery, files }: W
         )}
       </div>
       <div style={{ marginTop: 8 }}>
-        <button className={shared.buttonSmall} onClick={() => onChange(newManualWork(query, guessMovementNames(files)))}>
+        <button
+          className={shared.buttonSmall}
+          onClick={() =>
+            onChange({ ...newManualWork(query, guessMovementNames(files)), catalogueNumbers: guessCatalogueNumbers(files) })
+          }
+        >
           Enter work manually
         </button>
       </div>
