@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { commitImport } from '../../api/importClient'
 import type { ImportCommitRequest, ScanGroupOut } from '../../api/importTypes'
 import { ComposerPicker } from './ComposerPicker'
@@ -8,6 +8,7 @@ import {
   guessRecording,
   guessWorkTitle,
   parseLeadingInt,
+  partitionFiles,
   tracksFromFiles,
 } from './reviewTypes'
 import type { ReviewComposer, ReviewRecording, ReviewTrack, ReviewWork } from './reviewTypes'
@@ -22,20 +23,44 @@ interface ReviewPanelProps {
 }
 
 export function ReviewPanel({ group, onCommitted, onCancel }: ReviewPanelProps) {
+  // The folder's *remaining* (not-yet-committed) files — starts as the whole
+  // group, but shrinks in place as each work/composer within it gets
+  // committed, so a folder holding more than one work can be worked through
+  // without a full library Rescan between each one.
+  const [remainingFiles, setRemainingFiles] = useState<ScanGroupOut['files']>(group.files)
+  const [activeKey, setActiveKey] = useState<string | null>(null)
   const [composer, setComposer] = useState<ReviewComposer | null>(null)
   const [work, setWork] = useState<ReviewWork | null>(null)
   const [recording, setRecording] = useState<ReviewRecording>(() => guessRecording(group.files))
   const [tracks, setTracks] = useState<ReviewTrack[]>(() => tracksFromFiles(group.files))
   const [committing, setCommitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [justCommitted, setJustCommitted] = useState<string | null>(null)
 
+  const subGroups = useMemo(() => partitionFiles(remainingFiles), [remainingFiles])
+  const activeSubGroup = subGroups.find((g) => g.key === activeKey) ?? subGroups[0] ?? null
+  const activeFiles = activeSubGroup?.files ?? []
+  const activeSignature = activeFiles.map((f) => f.relative_path).join('|')
+
+  // A different folder was selected — reset everything back to its full file set.
+  useEffect(() => {
+    setRemainingFiles(group.files)
+    setActiveKey(null)
+    setJustCommitted(null)
+    setError(null)
+  }, [group])
+
+  // Whichever sub-group is active (folder just opened, user picked a
+  // different one, or the previous one just got committed and this one
+  // auto-advanced into place), the composer/work/recording/tracks state
+  // needs to describe *that* file set, not whatever was picked before.
   useEffect(() => {
     setComposer(null)
     setWork(null)
-    setRecording(guessRecording(group.files))
-    setTracks(tracksFromFiles(group.files))
-    setError(null)
-  }, [group])
+    setRecording(guessRecording(activeFiles))
+    setTracks(tracksFromFiles(activeFiles))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activeSignature])
 
   // Fill in the track → movement mapping automatically rather than making
   // every file's movement number(s) be retyped by hand (painful and easy to
@@ -130,7 +155,16 @@ export function ReviewPanel({ group, onCommitted, onCancel }: ReviewPanelProps) 
       }
 
       await commitImport(payload)
-      onCommitted()
+
+      const committedPaths = new Set(tracks.map((t) => t.file.relative_path))
+      const stillRemaining = remainingFiles.filter((f) => !committedPaths.has(f.relative_path))
+      if (stillRemaining.length === 0) {
+        onCommitted()
+        return
+      }
+      setJustCommitted(`Committed "${work.title}" (${committedPaths.size} file(s)) — continuing with what's left.`)
+      setRemainingFiles(stillRemaining)
+      setActiveKey(null)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Commit failed')
     } finally {
@@ -149,9 +183,35 @@ export function ReviewPanel({ group, onCommitted, onCancel }: ReviewPanelProps) 
         </button>
       </div>
 
+      {subGroups.length > 1 && (
+        <div className={shared.subgroupBanner}>
+          <div className={shared.subgroupHint}>
+            This folder looks like it contains {subGroups.length} separate works — reviewing one at a
+            time below. Committing one moves on to the next automatically; click any row to jump to it
+            instead.
+          </div>
+          <div className={shared.subgroupList}>
+            {subGroups.map((g) => (
+              <button
+                key={g.key}
+                className={`${shared.subgroupRow} ${g.key === activeSubGroup?.key ? shared.subgroupRowActive : ''}`}
+                onClick={() => setActiveKey(g.key)}
+              >
+                <span>
+                  {g.composerGuess || '(no composer tag)'} — {g.workGuess || '(no album tag)'}
+                </span>
+                <span className={shared.subgroupCount}>{g.files.length} file(s)</span>
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {justCommitted && <div className={shared.justCommitted}>{justCommitted}</div>}
+
       <div className={shared.hairlineDivider} />
       <div className={shared.sectionLabel}>Composer</div>
-      <ComposerPicker value={composer} onChange={updateWork} initialQuery={guessComposerName(group.files)} />
+      <ComposerPicker value={composer} onChange={updateWork} initialQuery={guessComposerName(activeFiles)} />
 
       <div className={shared.hairlineDivider} />
       <div className={shared.sectionLabel}>Work</div>
@@ -160,8 +220,8 @@ export function ReviewPanel({ group, onCommitted, onCancel }: ReviewPanelProps) 
           composer={composer}
           value={work}
           onChange={setWork}
-          initialQuery={guessWorkTitle(group.files)}
-          files={group.files}
+          initialQuery={guessWorkTitle(activeFiles)}
+          files={activeFiles}
         />
       ) : (
         <div style={{ fontStyle: 'italic', opacity: 0.55, fontSize: 14 }}>Pick a composer first.</div>

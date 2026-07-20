@@ -35,9 +35,9 @@ export function TrackMappingTable({ work, tracks, onChange }: TrackMappingTableP
         movement number(s) each file covers — most files cover exactly one.
       </div>
       <div className={styles.hint}>
-        If this folder actually contains more than one work (e.g. a two-symphony album), remove that
-        other work's files below — they're only skipped from <em>this</em> commit, not deleted — trim the
-        movements above to match, commit this one, then Rescan to review the rest as their own work.
+        If a file here doesn't actually belong to this movement set, remove it below — it's only skipped
+        from <em>this</em> commit, not deleted, and comes back around for review afterward (as its own
+        detected work, if this folder has more than one).
       </div>
       <table className={styles.table}>
         <thead>
@@ -86,7 +86,7 @@ export function TrackMappingTable({ work, tracks, onChange }: TrackMappingTableP
                   className={shared.repeatRowRemove}
                   onClick={() => removeTrack(i)}
                   aria-label={`Remove ${t.file.filename} from this batch`}
-                  title="Skip this file for now — leaves it pending for a later Rescan"
+                  title="Skip this file for now — it'll come back around for review before this folder is done"
                 >
                   ✕
                 </button>

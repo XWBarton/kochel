@@ -33,6 +33,14 @@ export function ComposerPicker({ value, onChange, initialQuery }: ComposerPicker
   const valueRef = useRef(value)
   valueRef.current = value
 
+  // ComposerPicker is never unmounted/remounted between different scan
+  // groups or sub-groups (unlike WorkPicker, which is conditionally
+  // rendered) — its `query` state needs to track a changed guess directly,
+  // since useState's initial value only applies on first mount.
+  useEffect(() => {
+    setQuery(initialQuery)
+  }, [initialQuery])
+
   useEffect(() => {
     if (value || debouncedQuery.trim().length < 2) {
       setResults([])
@@ -49,7 +57,13 @@ export function ComposerPicker({ value, onChange, initialQuery }: ComposerPicker
 
   // Auto-resolve from the tag-derived guess as soon as a group is opened,
   // instead of leaving a filled-looking search box that silently isn't
-  // actually selected until the user clicks something.
+  // actually selected until the user clicks something. Depends on `value`
+  // as well as `initialQuery` — this component persists across different
+  // scan (sub-)groups rather than remounting, so the render where
+  // `initialQuery` changes to a new guess can still have the *previous*
+  // group's `value` set; without `value` in the deps, that render's guard
+  // bails out and — since `initialQuery` doesn't change again once `value`
+  // actually clears — the effect would never get another chance to fire.
   useEffect(() => {
     const guess = initialQuery.trim()
     if (valueRef.current || !guess) return
@@ -63,7 +77,7 @@ export function ComposerPicker({ value, onChange, initialQuery }: ComposerPicker
       cancelled = true
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialQuery])
+  }, [initialQuery, value])
 
   if (value) {
     const tag = value.id ? 'existing in library' : value.openopusId ? 'new — from Open Opus' : 'new — manual'

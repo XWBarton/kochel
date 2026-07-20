@@ -203,3 +203,59 @@
   gap: 8px;
   font-size: 14px;
 }
+
+.subgroupBanner {
+  background: rgba(182, 64, 31, 0.06);
+  border: 1px solid var(--accent);
+  padding: 12px 14px 14px;
+  margin: 16px 0;
+}
+
+.subgroupHint {
+  font-size: 13px;
+  opacity: 0.75;
+  margin-bottom: 10px;
+}
+
+.subgroupList {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.subgroupRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 10px;
+  font-size: 13px;
+  text-align: left;
+  border: 1px solid transparent;
+  cursor: pointer;
+  background: none;
+}
+
+.subgroupRow:hover {
+  border-color: var(--divider);
+}
+
+.subgroupRowActive {
+  background: var(--paper);
+  border-color: var(--accent);
+  font-weight: 600;
+}
+
+.subgroupCount {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  opacity: 0.5;
+  white-space: nowrap;
+}
+
+.justCommitted {
+  composes: status;
+  color: var(--accent);
+  font-style: italic;
+}
