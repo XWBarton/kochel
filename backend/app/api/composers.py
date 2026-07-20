@@ -5,7 +5,12 @@ from sqlalchemy import func, select
 from app.api.deps import SessionDep
 from app.config import settings
 from app.models import Composer, Work
-from app.schemas.composer import ComposerListItem, ComposerListResponse, ComposerUpdate
+from app.schemas.composer import (
+    ComposerImagePositionUpdate,
+    ComposerListItem,
+    ComposerListResponse,
+    ComposerUpdate,
+)
 
 router = APIRouter(prefix="/composers", tags=["composers"])
 
@@ -101,6 +106,8 @@ async def update_composer_image(composer_id: int, session: SessionDep, file: Upl
         (settings.composer_images_root / composer.image_filename).unlink(missing_ok=True)
 
     composer.image_filename = destination.name
+    composer.image_focal_x = 0.5
+    composer.image_focal_y = 0.5
     await session.commit()
 
     result = await session.execute(_list_query().where(Composer.id == composer_id))
@@ -117,7 +124,28 @@ async def delete_composer_image(composer_id: int, session: SessionDep) -> Compos
     if composer.image_filename:
         (settings.composer_images_root / composer.image_filename).unlink(missing_ok=True)
         composer.image_filename = None
+        composer.image_focal_x = 0.5
+        composer.image_focal_y = 0.5
         await session.commit()
+
+    result = await session.execute(_list_query().where(Composer.id == composer_id))
+    composer, work_count = result.first()
+    return _to_list_item(composer, work_count)
+
+
+@router.patch("/{composer_id}/image/position", response_model=ComposerListItem)
+async def update_composer_image_position(
+    composer_id: int, payload: ComposerImagePositionUpdate, session: SessionDep
+) -> ComposerListItem:
+    composer = await session.get(Composer, composer_id)
+    if composer is None:
+        raise HTTPException(status_code=404, detail="Composer not found")
+    if not composer.image_filename:
+        raise HTTPException(status_code=400, detail="Composer has no image to position")
+
+    composer.image_focal_x = payload.focal_x
+    composer.image_focal_y = payload.focal_y
+    await session.commit()
 
     result = await session.execute(_list_query().where(Composer.id == composer_id))
     composer, work_count = result.first()

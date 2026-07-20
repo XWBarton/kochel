@@ -44,6 +44,16 @@ async function putForm<T>(path: string, body: FormData): Promise<T> {
   return resp.json() as Promise<T>
 }
 
+async function patch<T>(path: string, payload: unknown): Promise<T> {
+  const resp = await fetch(`${API_ROOT}${path}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload),
+  })
+  if (!resp.ok) return throwForStatus(resp)
+  return resp.json() as Promise<T>
+}
+
 async function del<T>(path: string): Promise<T> {
   const resp = await fetch(`${API_ROOT}${path}`, { method: 'DELETE' })
   if (!resp.ok) return throwForStatus(resp)
@@ -135,6 +145,14 @@ export function uploadComposerImage(composerId: number, file: File): Promise<Com
 
 export function deleteComposerImage(composerId: number): Promise<ComposerListItem> {
   return del(`/composers/${composerId}/image`)
+}
+
+export function updateComposerImagePosition(
+  composerId: number,
+  focalX: number,
+  focalY: number,
+): Promise<ComposerListItem> {
+  return patch(`/composers/${composerId}/image/position`, { focal_x: focalX, focal_y: focalY })
 }
 
 export function search(query: string): Promise<SearchResponse> {

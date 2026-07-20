@@ -26,11 +26,33 @@
   gap: 8px;
 }
 
+.avatarPositionBox {
+  border-radius: 50%;
+}
+
+.avatarPositionBoxActive {
+  cursor: grab;
+  touch-action: none;
+  outline: 1px dashed var(--divider);
+  outline-offset: 3px;
+}
+
+.avatarPositionBoxActive:active {
+  cursor: grabbing;
+}
+
 .avatarControls {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 4px;
+}
+
+.avatarHint {
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  opacity: 0.35;
+  font-style: italic;
 }
 
 .avatarUploadLink {

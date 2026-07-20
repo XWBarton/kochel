@@ -50,6 +50,8 @@ docker compose up -d --build
 
 To ship a new version later: `git pull && docker compose up -d --build`.
 
+**Bind-mount ownership gotcha:** `MUSIC_LIBRARY_PATH` and `COMPOSER_IMAGES_PATH` are bind-mounted read-write into the `app` container, which runs as an unprivileged `kochel` user (uid 1000), not root. If the host directory doesn't exist yet, Docker auto-creates it owned by `root` on first `up`, and the app then can't write into it (uploads fail with a 500/`PermissionError`). Either create these directories yourself before the first `docker compose up` (`mkdir -p` as your normal user), or if one already got created as root, remove the empty directory (`rmdir` — only needs write access to its parent, not ownership of the directory itself) and let it get recreated by your own `mkdir`, then `docker compose up -d --force-recreate app` to reattach the mount.
+
 ## Backend development (without Docker)
 
 ```

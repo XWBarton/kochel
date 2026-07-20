@@ -139,3 +139,60 @@ async def test_get_composer_image_404_when_none_set(client, composer_images_root
     composer_id = await _composer_id(client, "Johann Sebastian Bach")
     resp = await client.get(f"/api/v1/composers/{composer_id}/image")
     assert resp.status_code == 404
+
+
+async def test_update_composer_image_position_persists(client, composer_images_root):
+    composer_id = await _composer_id(client, "Johann Sebastian Bach")
+    await client.put(
+        f"/api/v1/composers/{composer_id}/image",
+        files={"file": ("bach.jpg", b"jpeg bytes", "image/jpeg")},
+    )
+
+    resp = await client.patch(
+        f"/api/v1/composers/{composer_id}/image/position", json={"focal_x": 0.2, "focal_y": 0.8}
+    )
+    assert resp.status_code == 200, resp.text
+    body = resp.json()
+    assert body["image_focal_x"] == 0.2
+    assert body["image_focal_y"] == 0.8
+
+
+async def test_update_composer_image_position_rejects_out_of_range(client, composer_images_root):
+    composer_id = await _composer_id(client, "Johann Sebastian Bach")
+    await client.put(
+        f"/api/v1/composers/{composer_id}/image",
+        files={"file": ("bach.jpg", b"jpeg bytes", "image/jpeg")},
+    )
+
+    resp = await client.patch(
+        f"/api/v1/composers/{composer_id}/image/position", json={"focal_x": 1.5, "focal_y": 0.5}
+    )
+    assert resp.status_code == 422
+
+
+async def test_update_composer_image_position_requires_existing_image(client, composer_images_root):
+    composer_id = await _composer_id(client, "Johann Sebastian Bach")
+    resp = await client.patch(
+        f"/api/v1/composers/{composer_id}/image/position", json={"focal_x": 0.5, "focal_y": 0.5}
+    )
+    assert resp.status_code == 400
+
+
+async def test_upload_composer_image_resets_focal_point(client, composer_images_root):
+    composer_id = await _composer_id(client, "Johann Sebastian Bach")
+    await client.put(
+        f"/api/v1/composers/{composer_id}/image",
+        files={"file": ("bach.jpg", b"jpeg bytes", "image/jpeg")},
+    )
+    await client.patch(
+        f"/api/v1/composers/{composer_id}/image/position", json={"focal_x": 0.1, "focal_y": 0.9}
+    )
+
+    resp = await client.put(
+        f"/api/v1/composers/{composer_id}/image",
+        files={"file": ("bach2.jpg", b"new jpeg bytes", "image/jpeg")},
+    )
+    assert resp.status_code == 200, resp.text
+    body = resp.json()
+    assert body["image_focal_x"] == 0.5
+    assert body["image_focal_y"] == 0.5

@@ -7,6 +7,8 @@ export interface ComposerListItem {
   period: string | null
   work_count: number
   image_url: string | null
+  image_focal_x: number
+  image_focal_y: number
 }
 
 export interface ComposerListResponse {

@@ -56,7 +56,14 @@ export function ComposerBrowse() {
               {group.composers.map((c) => (
                 <Link className={styles.row} to={`/composers/${c.id}`} key={c.id}>
                   <div className={styles.rowMain}>
-                    <ComposerAvatar name={c.name} sortName={c.sort_name} imageUrl={c.image_url} size="small" />
+                    <ComposerAvatar
+                      name={c.name}
+                      sortName={c.sort_name}
+                      imageUrl={c.image_url}
+                      focalX={c.image_focal_x}
+                      focalY={c.image_focal_y}
+                      size="small"
+                    />
                     <div>
                       <span className={styles.name}>{c.name}</span>
                       <span className={styles.dates}>{formatComposerDates(c.birth_year, c.death_year)}</span>

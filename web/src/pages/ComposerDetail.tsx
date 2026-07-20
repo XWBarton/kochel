@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import type { ChangeEvent } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import type { ChangeEvent, PointerEvent as ReactPointerEvent } from 'react'
 import { Link, useParams } from 'react-router-dom'
 import {
   deleteComposerImage,
@@ -8,6 +8,7 @@ import {
   getWork,
   getWorkRecordings,
   updateComposer,
+  updateComposerImagePosition,
   uploadComposerImage,
 } from '../api/client'
 import type { ComposerListItem, WorkListItem } from '../api/types'
@@ -61,6 +62,9 @@ export function ComposerDetail() {
   const [error, setError] = useState<string | null>(null)
   const [imageBusy, setImageBusy] = useState(false)
   const [imageError, setImageError] = useState<string | null>(null)
+  const [dragFocal, setDragFocal] = useState<{ x: number; y: number } | null>(null)
+  const positioningRef = useRef(false)
+  const avatarBoxRef = useRef<HTMLDivElement>(null)
   const { playRecording } = usePlayback()
 
   useEffect(() => {
@@ -112,6 +116,7 @@ export function ComposerDetail() {
     if (!file) return
     setImageBusy(true)
     setImageError(null)
+    setDragFocal(null)
     try {
       setComposer(await uploadComposerImage(id, file))
     } catch (err) {
@@ -124,6 +129,7 @@ export function ComposerDetail() {
   async function handleRemoveImage() {
     setImageBusy(true)
     setImageError(null)
+    setDragFocal(null)
     try {
       setComposer(await deleteComposerImage(id))
     } catch (err) {
@@ -133,14 +139,70 @@ export function ComposerDetail() {
     }
   }
 
+  function focalFromPointer(e: ReactPointerEvent<HTMLDivElement>) {
+    const box = avatarBoxRef.current
+    if (!box) return null
+    const rect = box.getBoundingClientRect()
+    const clamp01 = (n: number) => Math.min(1, Math.max(0, n))
+    return {
+      x: clamp01((e.clientX - rect.left) / rect.width),
+      y: clamp01((e.clientY - rect.top) / rect.height),
+    }
+  }
+
+  function handleAvatarPointerDown(e: ReactPointerEvent<HTMLDivElement>) {
+    if (!editing || !composer?.image_url) return
+    e.preventDefault()
+    e.currentTarget.setPointerCapture(e.pointerId)
+    positioningRef.current = true
+    const focal = focalFromPointer(e)
+    if (focal) setDragFocal(focal)
+  }
+
+  function handleAvatarPointerMove(e: ReactPointerEvent<HTMLDivElement>) {
+    if (!positioningRef.current) return
+    const focal = focalFromPointer(e)
+    if (focal) setDragFocal(focal)
+  }
+
+  async function handleAvatarPointerUp(e: ReactPointerEvent<HTMLDivElement>) {
+    if (!positioningRef.current) return
+    positioningRef.current = false
+    e.currentTarget.releasePointerCapture(e.pointerId)
+    const focal = focalFromPointer(e) ?? dragFocal
+    if (!focal) return
+    setDragFocal(focal)
+    try {
+      setComposer(await updateComposerImagePosition(id, focal.x, focal.y))
+    } catch (err) {
+      setImageError(err instanceof Error ? err.message : 'Could not save photo position')
+    }
+  }
+
   const groups = groupByCategory(works)
+  const displayFocal = dragFocal ?? { x: composer.image_focal_x, y: composer.image_focal_y }
 
   return (
     <div className={styles.wrap}>
       <div className={styles.header}>
         <div className={styles.identity}>
           <div className={styles.avatarWrap}>
-            <ComposerAvatar name={composer.name} sortName={composer.sort_name} imageUrl={composer.image_url} size="large" />
+            <div
+              className={`${styles.avatarPositionBox} ${editing && composer.image_url ? styles.avatarPositionBoxActive : ''}`}
+              ref={avatarBoxRef}
+              onPointerDown={handleAvatarPointerDown}
+              onPointerMove={handleAvatarPointerMove}
+              onPointerUp={handleAvatarPointerUp}
+            >
+              <ComposerAvatar
+                name={composer.name}
+                sortName={composer.sort_name}
+                imageUrl={composer.image_url}
+                focalX={displayFocal.x}
+                focalY={displayFocal.y}
+                size="large"
+              />
+            </div>
             {editing && (
               <div className={styles.avatarControls}>
                 <label className={styles.avatarUploadLink}>
@@ -163,6 +225,7 @@ export function ComposerDetail() {
                     Remove
                   </button>
                 )}
+                {composer.image_url && <span className={styles.avatarHint}>Drag photo to reposition</span>}
               </div>
             )}
           </div>
