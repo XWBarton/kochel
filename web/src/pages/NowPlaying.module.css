@@ -67,6 +67,7 @@
   display: flex;
   flex-direction: column;
   min-height: 0;
+  position: relative;
 }
 
 @media (max-width: 900px) {
@@ -76,21 +77,18 @@
   }
 }
 
-.topRow {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-bottom: 14px;
-}
-
 .label {
   font-size: 12px;
   letter-spacing: 0.28em;
   text-transform: uppercase;
   opacity: 0.6;
+  margin-bottom: 14px;
 }
 
 .closeButton {
+  position: absolute;
+  top: 16px;
+  right: 16px;
   font-size: 11px;
   letter-spacing: 0.1em;
   text-transform: uppercase;

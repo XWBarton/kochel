@@ -76,12 +76,7 @@ export function NowPlaying() {
       <div className={styles.artwork}>
         <div className={styles.artworkInset} />
         <div className={styles.artworkHeader}>
-          <div className={styles.topRow}>
-            <div className={styles.label}>Now Playing</div>
-            <button onClick={handleMinimize} aria-label="Minimize player" className={styles.closeButton}>
-              minimize ▾
-            </button>
-          </div>
+          <div className={styles.label}>Now Playing</div>
           <div className={styles.composerName}>{work.composer_name}</div>
           <div className={styles.workTitle}>{work.title}</div>
           {currentMovement && (
@@ -114,6 +109,10 @@ export function NowPlaying() {
       </div>
 
       <div className={styles.content}>
+        <button onClick={handleMinimize} aria-label="Minimize player" className={styles.closeButton}>
+          minimize ▾
+        </button>
+
         <div className={styles.movementsSection}>
           <div className={styles.movementsRule} />
           <div className={styles.movementsLabel}>Movements</div>
