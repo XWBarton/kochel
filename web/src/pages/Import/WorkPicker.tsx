@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { getWork } from '../../api/client'
+import { getComposerWorks, getWork } from '../../api/client'
 import { searchOpenOpusWorks, searchWorks } from '../../api/importClient'
 import type { ScanFileOut, WorkSearchResult } from '../../api/importTypes'
 import { useDebouncedValue } from './useDebouncedValue'
@@ -16,6 +16,11 @@ interface WorkPickerProps {
   files: ScanFileOut[]
 }
 
+interface ComposerDefaults {
+  category: string
+  catalogueSystem: string
+}
+
 export function WorkPicker({ composer, value, onChange, initialQuery, files }: WorkPickerProps) {
   const [query, setQuery] = useState(initialQuery)
   const [focused, setFocused] = useState(false)
@@ -23,6 +28,42 @@ export function WorkPicker({ composer, value, onChange, initialQuery, files }: W
   const debouncedQuery = useDebouncedValue(query, 250)
   const valueRef = useRef(value)
   valueRef.current = value
+
+  // For a composer already in the library, their existing catalogued works
+  // establish conventions worth reusing on a new one — almost always a
+  // single catalogue system regardless of genre (Bach → BWV, Mozart → K…),
+  // and sometimes a single category too, when every work so far agrees.
+  // Fetched fresh (rather than cached in state) at each place a brand-new
+  // work gets constructed, so it's never raced by an effect firing before
+  // a background fetch has resolved.
+  async function fetchComposerDefaults(): Promise<ComposerDefaults | null> {
+    if (composer.id == null) return null
+    const res = await getComposerWorks(composer.id)
+    const categories = new Set(res.items.map((w) => w.category).filter((c): c is string => !!c))
+    const systems = new Set(
+      res.items.flatMap((w) => w.catalogue_numbers.filter((cn) => cn.is_primary).map((cn) => cn.system)).filter(Boolean),
+    )
+    return {
+      category: categories.size === 1 ? [...categories][0] : '',
+      catalogueSystem: systems.size === 1 ? [...systems][0] : '',
+    }
+  }
+
+  // Backfills category/catalogue-system from the composer's established
+  // conventions wherever the tag-derived guess left them blank — never
+  // overrides a real guess, only fills gaps.
+  function withComposerDefaults(work: ReviewWork, defaults: ComposerDefaults | null): ReviewWork {
+    if (!defaults) return work
+    const category = work.category || defaults.category
+    let catalogueNumbers = work.catalogueNumbers
+    if (defaults.catalogueSystem) {
+      catalogueNumbers =
+        catalogueNumbers.length === 0
+          ? [{ system: defaults.catalogueSystem, number: '', isPrimary: true }]
+          : catalogueNumbers.map((cn) => (cn.system ? cn : { ...cn, system: defaults.catalogueSystem }))
+    }
+    return { ...work, category, catalogueNumbers }
+  }
 
   async function searchForComposer(q: string | undefined): Promise<WorkSearchResult[]> {
     if (composer.id != null) return searchWorks(composer.id, q)
@@ -69,19 +110,32 @@ export function WorkPicker({ composer, value, onChange, initialQuery, files }: W
     const guess = initialQuery.trim()
     if (valueRef.current || !guess) return
     let cancelled = false
-    searchForComposer(guess).then((r) => {
+    Promise.all([searchForComposer(guess), fetchComposerDefaults()]).then(([r, defaults]) => {
       if (cancelled || valueRef.current) return
       const exact = r.find((x) => titlesLikelyMatch(guess, x.title))
       if (exact && exact.source === 'library' && exact.id != null) {
         pickExisting(exact.id)
       } else if (exact) {
-        onChange({
-          ...newManualWork(exact.title, guessMovementNames(files)),
-          category: exact.category ?? '',
-          catalogueNumbers: guessCatalogueNumbers(files),
-        })
+        onChange(
+          withComposerDefaults(
+            {
+              ...newManualWork(exact.title, guessMovementNames(files)),
+              category: exact.category ?? '',
+              catalogueNumbers: guessCatalogueNumbers(files),
+            },
+            defaults,
+          ),
+        )
       } else {
-        onChange({ ...newManualWork(guess, guessMovementNames(files)), catalogueNumbers: guessCatalogueNumbers(files) })
+        onChange(
+          withComposerDefaults(
+            {
+              ...newManualWork(guess, guessMovementNames(files)),
+              catalogueNumbers: guessCatalogueNumbers(files),
+            },
+            defaults,
+          ),
+        )
       }
     })
     return () => {
@@ -134,12 +188,18 @@ export function WorkPicker({ composer, value, onChange, initialQuery, files }: W
               <div
                 key={`${r.source}-${r.id ?? i}`}
                 className={shared.suggestion}
-                onMouseDown={() => {
+                onMouseDown={async () => {
                   if (r.source === 'library' && r.id != null) {
                     pickExisting(r.id)
                   } else {
                     const work = newManualWork(r.title, guessMovementNames(files))
-                    onChange({ ...work, category: r.category ?? '', catalogueNumbers: guessCatalogueNumbers(files) })
+                    const defaults = await fetchComposerDefaults()
+                    onChange(
+                      withComposerDefaults(
+                        { ...work, category: r.category ?? '', catalogueNumbers: guessCatalogueNumbers(files) },
+                        defaults,
+                      ),
+                    )
                   }
                 }}
               >
@@ -156,9 +216,15 @@ export function WorkPicker({ composer, value, onChange, initialQuery, files }: W
       <div style={{ marginTop: 8 }}>
         <button
           className={shared.buttonSmall}
-          onClick={() =>
-            onChange({ ...newManualWork(query, guessMovementNames(files)), catalogueNumbers: guessCatalogueNumbers(files) })
-          }
+          onClick={async () => {
+            const defaults = await fetchComposerDefaults()
+            onChange(
+              withComposerDefaults(
+                { ...newManualWork(query, guessMovementNames(files)), catalogueNumbers: guessCatalogueNumbers(files) },
+                defaults,
+              ),
+            )
+          }}
         >
           Enter work manually
         </button>
