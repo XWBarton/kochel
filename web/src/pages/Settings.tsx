@@ -3,15 +3,15 @@ import { ACCENT_COLORS, useSettings } from '../settings/SettingsContext'
 import styles from './Settings.module.css'
 
 export function Settings() {
-  const { accentColorName, setAccentColorName, panelTheme, setPanelTheme } = useSettings()
+  const { accentColorName, setAccentColorName, theme, setTheme } = useSettings()
 
   return (
     <div className={styles.wrap}>
       <div className={styles.title}>Settings</div>
       <div className={styles.intro}>
         The accent color is used only for the currently-playing state, primary actions, and small
-        highlights — never decoration. The panel theme sets the default look of the Now Playing screen,
-        which can also be toggled per-session from there.
+        highlights — never decoration. Theme applies across the whole app, and can also be toggled from
+        the Now Playing screen.
       </div>
 
       <div className={styles.sectionLabel}>Accent color</div>
@@ -31,11 +31,11 @@ export function Settings() {
         })}
       </div>
 
-      <div className={styles.sectionLabel}>Now Playing panel theme</div>
+      <div className={styles.sectionLabel}>Theme</div>
       <div className={styles.themeRow}>
         <button
-          className={`${styles.themeOption} ${panelTheme === 'dark' ? styles.active : ''}`}
-          onClick={() => setPanelTheme('dark')}
+          className={`${styles.themeOption} ${theme === 'dark' ? styles.active : ''}`}
+          onClick={() => setTheme('dark')}
         >
           <div className={`${styles.themePreview} ${styles.dark}`}>
             <div className={styles.themePreviewDot} />
@@ -43,8 +43,8 @@ export function Settings() {
           <div className={styles.themeLabel}>Dark</div>
         </button>
         <button
-          className={`${styles.themeOption} ${panelTheme === 'light' ? styles.active : ''}`}
-          onClick={() => setPanelTheme('light')}
+          className={`${styles.themeOption} ${theme === 'light' ? styles.active : ''}`}
+          onClick={() => setTheme('light')}
         >
           <div className={`${styles.themePreview} ${styles.light}`}>
             <div className={styles.themePreviewDot} />
@@ -53,8 +53,8 @@ export function Settings() {
         </button>
       </div>
       <div className={styles.themeNote}>
-        Like a record sleeve — dark ink background with ivory text, or the reverse. Every other screen
-        always stays on the ivory page surface regardless of this choice.
+        Like a record sleeve — dark ink background with ivory text, or the reverse. Applies everywhere,
+        not just the Now Playing screen. Defaults to your system's theme the first time you open Köchel.
       </div>
     </div>
   )

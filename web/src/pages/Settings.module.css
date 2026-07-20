@@ -95,12 +95,16 @@
   justify-content: center;
 }
 
+/* fixed reference colors, not var(--ink)/var(--paper) — these previews
+   must show what each option looks like regardless of the currently
+   active theme (which var(--ink)/var(--paper) would otherwise reflect,
+   making the previews render backwards while already in dark mode) */
 .themePreview.dark {
-  background: var(--ink);
+  background: #161513;
 }
 
 .themePreview.light {
-  background: var(--paper);
+  background: #fafaf7;
 }
 
 .themePreviewDot {

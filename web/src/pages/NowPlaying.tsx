@@ -2,16 +2,12 @@ import { useRef, useState } from 'react'
 import type { PointerEvent as ReactPointerEvent } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Sunburst } from '../components/Sunburst'
-import { hexToRgba } from '../lib/color'
 import { formatDuration, toRoman } from '../lib/format'
 import { findMovementTiming } from '../playback/movementTiming'
 import { usePlayback } from '../playback/PlaybackContext'
 import { useSmoothProgress } from '../playback/useSmoothProgress'
 import { useSettings } from '../settings/SettingsContext'
 import styles from './NowPlaying.module.css'
-
-const INK = '#161513'
-const PAPER = '#fafaf7'
 
 export function NowPlaying() {
   const {
@@ -28,7 +24,7 @@ export function NowPlaying() {
     prevMovement,
     getElapsedSeconds,
   } = usePlayback()
-  const { accentColor, panelTheme, setPanelTheme } = useSettings()
+  const { accentColor, theme, setTheme } = useSettings()
   const navigate = useNavigate()
   const trackRef = useRef<HTMLDivElement>(null)
   const [seeking, setSeeking] = useState(false)
@@ -52,17 +48,7 @@ export function NowPlaying() {
     return <div className={styles.empty}>Nothing playing. Pick a recording from a work to begin.</div>
   }
 
-  const dark = panelTheme === 'dark'
-  const panelBg = dark ? INK : PAPER
-  const panelFg = dark ? PAPER : INK
-
-  const panelStyle = {
-    '--panel-bg': panelBg,
-    '--panel-fg': panelFg,
-    '--panel-fg-15': hexToRgba(panelFg, 0.15),
-    '--panel-fg-25': hexToRgba(panelFg, 0.25),
-    '--panel-fg-30': hexToRgba(panelFg, 0.3),
-  } as React.CSSProperties
+  const dark = theme === 'dark'
 
   const movements = [...work.movements].sort((a, b) => a.movement_number - b.movement_number)
   const currentMovement = movements.find((m) => m.id === currentMovementId) ?? null
@@ -86,13 +72,13 @@ export function NowPlaying() {
   const progressPct = progress * 100
 
   return (
-    <div className={styles.panel} style={panelStyle}>
+    <div className={styles.panel}>
       <div className={styles.artwork}>
         <div className={styles.artworkInset} />
-        <Sunburst size={320} fg={panelFg} accent={accentColor} spinning={isPlaying} progress={progress} />
+        <Sunburst size={320} fg="var(--ink)" accent={accentColor} spinning={isPlaying} progress={progress} />
         <button
-          onClick={() => setPanelTheme(dark ? 'light' : 'dark')}
-          aria-label="Toggle panel theme"
+          onClick={() => setTheme(dark ? 'light' : 'dark')}
+          aria-label="Toggle theme"
           style={{
             position: 'absolute',
             top: 16,

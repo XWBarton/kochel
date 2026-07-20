@@ -6,8 +6,6 @@ import { useSettings } from '../settings/SettingsContext'
 import { Sunburst } from './Sunburst'
 import styles from './MiniPlayer.module.css'
 
-const INK = '#161513'
-
 export function MiniPlayer() {
   const navigate = useNavigate()
   const location = useLocation()
@@ -40,7 +38,7 @@ export function MiniPlayer() {
     <div className={styles.bar}>
       <div className={styles.progressLine} style={{ width: `${progress * 100}%` }} />
       <div className={styles.sunburst}>
-        <Sunburst size={26} fg={INK} accent={accentColor} rays={false} spinning={isPlaying} />
+        <Sunburst size={26} fg="var(--ink)" accent={accentColor} rays={false} spinning={isPlaying} />
       </div>
       <div className={styles.info} onClick={() => navigate('/now-playing')} title={label}>
         {label}

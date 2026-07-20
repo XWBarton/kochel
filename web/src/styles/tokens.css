@@ -8,11 +8,35 @@
   --divider: rgba(22, 21, 19, 0.12);
   --section-rule: var(--ink);
 
+  --error: #b3261e;
+  --warning: #8a6d00;
+
+  /* fixed regardless of theme — for text/icons sitting directly on the
+     accent color (e.g. the play button), which needs to stay legible
+     against accent whichever way ink/paper are currently oriented */
+  --accent-contrast: #fafaf7;
+
   --font-display: 'Abril Fatface', serif;
   --font-body: 'EB Garamond', serif;
 
   --label-tracking: 0.16em;
   --label-tracking-wide: 0.28em;
+}
+
+/* Theme is a user preference (Settings → Theme), defaulting to the
+   system's prefers-color-scheme on first visit — see SettingsContext,
+   which sets data-theme on <html>. Ink and paper swap roles; --accent (and
+   the 4 selectable accent swatches) stay the same in both themes since
+   they're already mid-saturation colors that read fine on either
+   background. */
+:root[data-theme='dark'] {
+  --ink: #fafaf7;
+  --paper: #161513;
+
+  --divider: rgba(250, 250, 247, 0.14);
+
+  --error: #ff6b5c;
+  --warning: #e0b84d;
 }
 
 * {

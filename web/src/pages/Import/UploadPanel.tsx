@@ -121,7 +121,7 @@ export function UploadPanel({ onUploaded }: UploadPanelProps) {
           {notableResults.map((r) => (
             <div
               key={r.relative_path}
-              style={{ padding: '2px 0', color: r.status === 'rejected' ? '#b3261e' : '#8a6d00' }}
+              style={{ padding: '2px 0', color: r.status === 'rejected' ? 'var(--error)' : 'var(--warning)' }}
             >
               {r.relative_path} — {r.detail}
             </div>

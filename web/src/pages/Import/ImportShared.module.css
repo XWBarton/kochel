@@ -108,7 +108,7 @@
 
 .statusError {
   composes: status;
-  color: #b3261e;
+  color: var(--error);
 }
 
 .progressTrack {
@@ -152,7 +152,7 @@
 }
 
 .suggestion:hover {
-  background: rgba(22, 21, 19, 0.05);
+  background: color-mix(in srgb, var(--ink) 5%, transparent);
 }
 
 .suggestion:last-child {
@@ -168,7 +168,7 @@
 }
 
 .picked {
-  background: rgba(182, 64, 31, 0.08);
+  background: color-mix(in srgb, var(--accent) 8%, var(--paper));
   border: 1px solid var(--accent);
   padding: 10px 14px;
   margin-bottom: 14px;
@@ -205,7 +205,7 @@
 }
 
 .subgroupBanner {
-  background: rgba(182, 64, 31, 0.06);
+  background: color-mix(in srgb, var(--accent) 6%, var(--paper));
   border: 1px solid var(--accent);
   padding: 12px 14px 14px;
   margin: 16px 0;
